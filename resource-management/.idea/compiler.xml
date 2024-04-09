@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="resource-management-service" />
+        <module name="lib-global" />
+        <module name="lib-common" />
+        <module name="resource-management-all" />
+        <module name="resource-management-dao" />
+      </profile>
+    </annotationProcessing>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="lib-common" options="-parameters" />
+      <module name="lib-global" options="-parameters" />
+      <module name="resource-management" options="" />
+      <module name="resource-management-all" options="-parameters" />
+      <module name="resource-management-dao" options="-parameters" />
+      <module name="resource-management-service" options="-parameters" />
+    </option>
+  </component>
+</project>
