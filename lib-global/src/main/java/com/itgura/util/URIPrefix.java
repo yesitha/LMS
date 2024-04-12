@@ -11,7 +11,5 @@ public class URIPrefix {
     public static final String INFO = "/info";
 
 
-
-
-
+    public static final String DOCUMENTS = "/documents";
 }

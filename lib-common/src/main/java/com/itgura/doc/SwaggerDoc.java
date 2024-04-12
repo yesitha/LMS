@@ -74,11 +74,11 @@ public class SwaggerDoc {
 //    }
 
 	@Bean
-	public OpenAPI inovaOpenAPI() {
+	public OpenAPI itGuraOpenAPI() {
 		// Define Info
-		Info info = new Info().title("Project and Resource Management API Documentation")
+		Info info = new Info().title("ITGura LMS  API Documentation")
 				.version("1.0")
-				.description("This is the complete API documentation of this particular microservice that exposes Project and Resource Management System");
+				.description("This is the complete API documentation of this particular microservice that exposes LMS APIs.");
 
 		SecurityScheme securityScheme = new SecurityScheme()
 				.type(SecurityScheme.Type.HTTP)
