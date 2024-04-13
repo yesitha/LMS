@@ -45,6 +45,12 @@ public class Student {
     private Address address;
     @OneToMany(mappedBy = "student",fetch = FetchType.EAGER)
     private List<ClassStudent> classStudentList;
+    @OneToMany(mappedBy = "student",fetch = FetchType.EAGER)
+    private List<Payment> paymentList;
+    @OneToMany(mappedBy = "student",fetch = FetchType.EAGER)
+    private List<StudentSession> studentSessionList;
+    @OneToMany(mappedBy = "student",fetch = FetchType.EAGER)
+    private List<StudentQuiz> studentQuizList;
 
 
 }

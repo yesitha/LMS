@@ -39,4 +39,6 @@ public class Lesson {
     private Class aClass;
     @OneToMany(mappedBy = "lesson",fetch = FetchType.EAGER)
     private List<Session> sessionList;
+    @OneToMany(mappedBy = "lesson",fetch = FetchType.EAGER)
+    private List<Quiz> quizList;
 }

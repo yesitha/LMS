@@ -22,7 +22,7 @@ public class Recording {
     private UUID recordingId;
     @Column(name = "recording_name")
     private String recordingName;
-    @Column(name = "reference")
+    @Column(name = "reference" , columnDefinition = "TEXT" )
     private String reference;
     @Column(name = "uploaded_by")
     @Lob

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,6 +26,10 @@ public class Session {
     private String sessionName;
     @Column(name = "topic")
     private String  topic;
+    @Column(name = "short_description")
+    private String  shortDescription;
+    @Column(name = "date_and_time")
+    private Date dateAndTime;
     @OneToMany(mappedBy = "session",fetch = FetchType.EAGER)
     private List<Recording> classStudentList;
     @OneToMany(mappedBy = "session",fetch = FetchType.EAGER)
@@ -34,5 +39,7 @@ public class Session {
     private Lesson lesson;
     @OneToMany(mappedBy = "session",fetch = FetchType.EAGER)
     private List<ScheduleSession> scheduleSessionList;
+    @OneToMany(mappedBy = "session",fetch = FetchType.EAGER)
+    private List<StudentSession> studentSessionList;
 
 }

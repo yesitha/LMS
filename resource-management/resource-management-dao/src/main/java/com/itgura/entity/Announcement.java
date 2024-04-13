@@ -23,7 +23,7 @@ public class Announcement {
     private UUID announcementId;
     @Column(name = "announcement_title")
     private String announcementTitle;
-    @Column(name = "announcement_description")
+    @Column(name = "announcement_description", columnDefinition = "TEXT")
     private String announcementDescription;
     @Column(name = "announcement_on")
     private Date announcementOn;

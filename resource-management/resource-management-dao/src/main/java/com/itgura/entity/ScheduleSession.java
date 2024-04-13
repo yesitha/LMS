@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Date;
 import java.util.UUID;
 
 @Entity
@@ -24,6 +25,8 @@ public class ScheduleSession {
     private String venue;
     @Column(name = "short_description")
     private String shortDescription;
+    @Column(name = "date_and_time")
+    private Date dateAndTime;
     @ManyToOne
     @JoinColumn(name = "schedule_id")
     private Schedule schedule;

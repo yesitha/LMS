@@ -25,6 +25,9 @@ public class Class {
     private String className;
     @Column(name = "year")
     private Integer year;
+    @ManyToOne
+    @JoinColumn(name = "fees_id")
+    private Fees fees;
     @OneToMany(mappedBy = "aClass",fetch = FetchType.EAGER)
     private List<ClassStudent> classStudentList;
     @OneToMany(mappedBy = "aClass",fetch = FetchType.EAGER)
@@ -33,5 +36,7 @@ public class Class {
     private List<Schedule> scheduleList;
     @OneToMany(mappedBy = "aClass",fetch = FetchType.EAGER)
     private List<Announcement> announcementList;
+    @OneToMany(mappedBy = "aClass",fetch = FetchType.EAGER)
+    private List<Payment> paymentList;
 
 }
