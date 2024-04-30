@@ -46,9 +46,9 @@ public class Student {
     @OneToMany(mappedBy = "student",fetch = FetchType.EAGER)
     private List<ClassStudent> classStudentList;
     @OneToMany(mappedBy = "student",fetch = FetchType.EAGER)
-    private List<Payment> paymentList;
+    private List<Transaction> transactionList;
     @OneToMany(mappedBy = "student",fetch = FetchType.EAGER)
-    private List<StudentSession> studentSessionList;
+    private List<StudentTransactionContent> studentTransactionContentList;
     @OneToMany(mappedBy = "student",fetch = FetchType.EAGER)
     private List<StudentQuiz> studentQuizList;
 

@@ -40,6 +40,6 @@ public class Session {
     @OneToMany(mappedBy = "session",fetch = FetchType.EAGER)
     private List<ScheduleSession> scheduleSessionList;
     @OneToMany(mappedBy = "session",fetch = FetchType.EAGER)
-    private List<StudentSession> studentSessionList;
+    private List<StudentTransactionContent> studentTransactionContentList;
 
 }

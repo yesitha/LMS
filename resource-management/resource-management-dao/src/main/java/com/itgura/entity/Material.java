@@ -14,7 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
-public class Material {
+public class Material  {
     @Id
     @Lob
     @GeneratedValue(strategy = GenerationType.UUID)

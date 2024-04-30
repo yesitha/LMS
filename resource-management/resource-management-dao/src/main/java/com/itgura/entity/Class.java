@@ -37,6 +37,6 @@ public class Class {
     @OneToMany(mappedBy = "aClass",fetch = FetchType.EAGER)
     private List<Announcement> announcementList;
     @OneToMany(mappedBy = "aClass",fetch = FetchType.EAGER)
-    private List<Payment> paymentList;
+    private List<Transaction> transactionList;
 
 }

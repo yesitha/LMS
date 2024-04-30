@@ -14,7 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
-public class StudentSession {
+public class StudentTransactionContent {
     @Id
     @Lob
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -28,5 +28,5 @@ public class StudentSession {
     private Session session;
     @ManyToOne
     @JoinColumn(name = "payment_id")
-    private Payment payment;
+    private Transaction transaction;
 }

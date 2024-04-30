@@ -11,21 +11,21 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "payment", schema = "resource_management")
+@Table(name = "transaction", schema = "resource_management")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class Payment {
+public class Transaction {
     @Id
     @Lob
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "payment_id")
-    private UUID paymentId;
+    @Column(name = "transaction_id")
+    private UUID transactionId;
     @Column(name = "amount")
     private Double amount;
-    @Column(name = "payment_date")
-    private Date paymentDate;
+    @Column(name = "transaction_date")
+    private Date transactionDate;
     @Column(name = "payment_month_for")
     private String paymentMonthFor;
     @Column(name = "payment_year_for")
@@ -36,7 +36,7 @@ public class Payment {
     @ManyToOne
     @JoinColumn(name = "class_id")
     private Class aClass;
-    @OneToMany(mappedBy = "payment",fetch = FetchType.EAGER)
-    private List<StudentSession> studentSessionList;
+    @OneToMany(mappedBy = "transaction",fetch = FetchType.EAGER)
+    private List<StudentTransactionContent> studentTransactionContentList;
 
 }
