@@ -16,12 +16,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
-public class Lesson {
-    @Id
-    @Lob
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "lesson_id")
-    private UUID lessonId;
+public class Lesson extends Content{
     @Column(name = "lesson_name")
     private String lessonName;
     @Column(name = "lesson_number")

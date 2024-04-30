@@ -23,10 +23,9 @@ public class StudentTransactionContent {
     @ManyToOne
     @JoinColumn(name = "student_id")
     private Student student;
+    @Column(name = "content_id")
+    private UUID contentId;
     @ManyToOne
-    @JoinColumn(name = "session_id")
-    private Session session;
-    @ManyToOne
-    @JoinColumn(name = "payment_id")
-    private Transaction transaction;
+    @JoinColumn(name = "transaction_id")
+    private Transaction transactionId;
 }
