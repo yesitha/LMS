@@ -14,6 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
+
 @PrimaryKeyJoinColumn(name = "recording_id")
 public class Recording extends Content {
 
