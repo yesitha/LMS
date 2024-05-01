@@ -13,12 +13,10 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class Paper {
-    @Id
-    @Lob
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "paper_id")
-    private UUID paperId;
+@PrimaryKeyJoinColumn(name = "paper_id")
+public class Paper extends Content {
+
+
     @Column(name = "paper_name")
     private String paperName;
     @Column(name = "year")

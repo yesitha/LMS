@@ -23,7 +23,7 @@ public class Stream {
     private UUID streamId;
     @Column(name = "stream")
     private String stream;
-    @OneToMany(mappedBy = "stream",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "stream")
     private List<Student> studentList;
 
 }

@@ -13,12 +13,9 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class QuizQuestion {
-    @Id
-    @Lob
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "quiz_question_id")
-    private UUID  quizQuestionId;
+@PrimaryKeyJoinColumn(name = "quiz_question_id")
+public class QuizQuestion extends Content {
+
     @Column(name = "question", columnDefinition = "TEXT")
     private String question;
     @Column(name = "marks")
@@ -31,7 +28,7 @@ public class QuizQuestion {
     @ManyToOne
     @JoinColumn(name = "quiz_id")
     private Quiz quiz;
-    @OneToMany(mappedBy = "quizQuestion",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "quizQuestion")
     private List<StudentAnswerQuiz> studentAnswerQuizList;
 
 }

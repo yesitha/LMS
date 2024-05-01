@@ -16,12 +16,9 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
-public class Lesson {
-    @Id
-    @Lob
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "lesson_id")
-    private UUID lessonId;
+@PrimaryKeyJoinColumn(name = "lesson_id")
+public class Lesson extends Content {
+
     @Column(name = "lesson_name")
     private String lessonName;
     @Column(name = "lesson_number")
@@ -37,8 +34,8 @@ public class Lesson {
     @ManyToOne
     @JoinColumn(name = "class_id")
     private Class aClass;
-    @OneToMany(mappedBy = "lesson",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "lesson")
     private List<Session> sessionList;
-    @OneToMany(mappedBy = "lesson",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "lesson")
     private List<Quiz> quizList;
 }

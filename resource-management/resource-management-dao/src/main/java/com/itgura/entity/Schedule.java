@@ -26,7 +26,7 @@ public class Schedule {
     @ManyToOne
     @JoinColumn(name = "class_id")
     private Class aClass;
-    @OneToMany(mappedBy = "schedule",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "schedule")
     private List<ScheduleSession> scheduleSessionList;
 
 

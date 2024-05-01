@@ -1,15 +1,19 @@
 package com.itgura.entity;
 
+import com.itgura.enums.ContentAccessType;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.UUID;
 
-@MappedSuperclass
+
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "content", schema = "resource_management")
 @Getter
 @Setter
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Content {
     @Id
     @Lob
@@ -30,5 +34,7 @@ public class Content {
     private java.util.Date lastModifiedOn;
     @Column(name = "price")
     private Double price;
+    @Enumerated(EnumType.STRING)
+    private ContentAccessType contentAccessType;
 
 }

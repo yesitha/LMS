@@ -16,12 +16,9 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
-public class Session {
-    @Id
-    @Lob
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "session_id")
-    private UUID sessionId;
+@PrimaryKeyJoinColumn(name = "session_id")
+public class Session extends Content {
+
     @Column(name = "session_name")
     private String sessionName;
     @Column(name = "topic")
@@ -30,16 +27,16 @@ public class Session {
     private String  shortDescription;
     @Column(name = "date_and_time")
     private Date dateAndTime;
-    @OneToMany(mappedBy = "session",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "session")
     private List<Recording> classStudentList;
-    @OneToMany(mappedBy = "session",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "session")
     private List<Material> lessonList;
     @ManyToOne
     @JoinColumn(name = "lesson_id")
     private Lesson lesson;
-    @OneToMany(mappedBy = "session",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "session")
     private List<ScheduleSession> scheduleSessionList;
-    @OneToMany(mappedBy = "session",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "session")
     private List<StudentTransactionContent> studentTransactionContentList;
 
 }

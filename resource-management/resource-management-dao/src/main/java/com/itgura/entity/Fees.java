@@ -23,7 +23,7 @@ public class Fees {
     private UUID feesId;
     @Column(name = "amount")
     private Double amount;
-    @OneToMany(mappedBy = "fees",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "fees")
     private List<Class> classList;
 
 }

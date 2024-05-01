@@ -43,13 +43,13 @@ public class Student {
     @ManyToOne
     @JoinColumn(name = "address_id")
     private Address address;
-    @OneToMany(mappedBy = "student",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "student")
     private List<ClassStudent> classStudentList;
-    @OneToMany(mappedBy = "student",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "student")
     private List<Transaction> transactionList;
-    @OneToMany(mappedBy = "student",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "student")
     private List<StudentTransactionContent> studentTransactionContentList;
-    @OneToMany(mappedBy = "student",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "student")
     private List<StudentQuiz> studentQuizList;
 
 

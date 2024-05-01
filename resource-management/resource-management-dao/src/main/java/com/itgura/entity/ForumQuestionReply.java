@@ -15,19 +15,12 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
-public class ForumQuestionReply {
-    @Id
-    @Lob
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "forum_question_reply_id")
-    private UUID forumQuestionReplyId;
+@PrimaryKeyJoinColumn(name = "forum_question_reply_id")
+public class ForumQuestionReply extends Content{
+
     @Column(name = "reply", columnDefinition = "TEXT")
     private String reply;
-    @Column(name = "created_by")
-    @Lob
-    private UUID createdBy;
-    @Column(name = "created_on")
-    private java.util.Date createdOn;
+
     @ManyToOne
     @JoinColumn(name = "forum_question_id")
     private ForumQuestion forumQuestion;

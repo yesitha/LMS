@@ -12,12 +12,9 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class QuizImage {
-    @Id
-    @Lob
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "quiz_image_id")
-    private UUID quizImageId;
+@PrimaryKeyJoinColumn(name = "quiz_image_id")
+public class QuizImage extends Content{
+
     @Column(name = "image")
     private byte[] image;
     @OneToOne

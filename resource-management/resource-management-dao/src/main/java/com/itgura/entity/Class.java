@@ -15,12 +15,9 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
-public class Class {
-    @Id
-    @Lob
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "class_id")
-    private UUID classId;
+@PrimaryKeyJoinColumn(name = "class_id")
+public class Class extends Content  {
+
     @Column(name = "class_name")
     private String className;
     @Column(name = "year")
@@ -28,15 +25,15 @@ public class Class {
     @ManyToOne
     @JoinColumn(name = "fees_id")
     private Fees fees;
-    @OneToMany(mappedBy = "aClass",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "aClass")
     private List<ClassStudent> classStudentList;
-    @OneToMany(mappedBy = "aClass",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "aClass")
     private List<Lesson> lessonList;
-    @OneToMany(mappedBy = "aClass",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "aClass")
     private List<Schedule> scheduleList;
-    @OneToMany(mappedBy = "aClass",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "aClass")
     private List<Announcement> announcementList;
-    @OneToMany(mappedBy = "aClass",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "aClass")
     private List<Transaction> transactionList;
 
 }

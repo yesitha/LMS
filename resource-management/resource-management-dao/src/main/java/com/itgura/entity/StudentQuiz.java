@@ -37,6 +37,6 @@ public class StudentQuiz {
     private java.sql.Time endedTime;
     @Column(name = "duration_in_minutes")
     private Integer durationInMinutes;
-    @OneToMany(mappedBy = "studentQuiz",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "studentQuiz")
     private List<StudentAnswerQuiz> studentAnswerQuizList;
 }

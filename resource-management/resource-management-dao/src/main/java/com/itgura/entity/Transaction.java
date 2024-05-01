@@ -36,7 +36,7 @@ public class Transaction {
     @ManyToOne
     @JoinColumn(name = "class_id")
     private Class aClass;
-    @OneToMany(mappedBy = "transaction",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "transaction")
     private List<StudentTransactionContent> studentTransactionContentList;
 
 }

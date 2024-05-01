@@ -14,21 +14,14 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
-public class Material  {
-    @Id
-    @Lob
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "material_id")
-    private UUID materialId;
+@PrimaryKeyJoinColumn(name = "material_id")
+public class Material extends Content  {
+
     @Column(name = "material_name")
     private String materialName;
     @Column(name = "reference")
-    private String reference;
-    @Column(name = "uploaded_by")
-    @Lob
-    private UUID uploadedBy;
-    @Column(name = "uploaded_on")
-    private java.util.Date uploadedOn;
+    private UUID reference;
+
     @Column(name = "description")
     private String description;
     @ManyToOne
