@@ -24,3 +24,11 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+auth-service/.mvn/wrapper/maven-wrapper.jar
+*.jar
+*.jar
+auth-service/.mvn/wrapper/maven-wrapper.jar
+auth-service/mvnw
+auth-service/mvnw.cmd
+resource-management/resource-management-all/target/resource-management-all-1.0.0.jar.original
+*.lst
