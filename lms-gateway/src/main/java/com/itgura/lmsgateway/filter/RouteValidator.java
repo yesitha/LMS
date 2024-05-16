@@ -12,10 +12,12 @@ import java.util.function.Predicate;
 public class RouteValidator {
 
     public static final List<String> openApiEndpoints = List.of(
-            "/api/v1/auth-service/authenticate",
-            "/api/v1/auth-service/register",
-            "/api/v1/auth-service/refresh",
-            "/eureka"
+            "/auth-service/authenticate",
+            "/auth-service/register",
+            "/auth-service/refresh",
+            "/auth-service/validateToken",
+            "/eureka",
+            "/resource-management/public"
 
 
     );
