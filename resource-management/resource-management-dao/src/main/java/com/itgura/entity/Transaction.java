@@ -24,12 +24,17 @@ public class Transaction {
     private UUID transactionId;
     @Column(name = "amount")
     private Double amount;
+    @Column(name = "reference_number")
+    private String referenceNumber;
+    @Column(name = "note")
+    private String note;
     @Column(name = "transaction_date")
     private Date transactionDate;
     @Column(name = "payment_month_for")
     private String paymentMonthFor;
     @Column(name = "payment_year_for")
     private String paymentYearFor;
+
     @ManyToOne
     @JoinColumn(name = "student_id")
     private Student student;
@@ -38,5 +43,6 @@ public class Transaction {
     private Class aClass;
     @OneToMany(mappedBy = "transaction")
     private List<StudentTransactionContent> studentTransactionContentList;
+
 
 }

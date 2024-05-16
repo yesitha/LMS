@@ -19,7 +19,6 @@ import java.util.UUID;
 public class Forum extends Content{
 
 
-
     @Column(name = "announcement", columnDefinition = "TEXT")
     private String announcement;
     @Column(name = "created_by_name")

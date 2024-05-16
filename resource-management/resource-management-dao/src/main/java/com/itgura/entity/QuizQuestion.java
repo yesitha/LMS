@@ -16,6 +16,7 @@ import java.util.UUID;
 @PrimaryKeyJoinColumn(name = "quiz_question_id")
 public class QuizQuestion extends Content {
 
+
     @Column(name = "question", columnDefinition = "TEXT")
     private String question;
     @Column(name = "marks")

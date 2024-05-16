@@ -24,9 +24,9 @@ public class StudentTransactionContent {
     @JoinColumn(name = "student_id")
     private Student student;
     @ManyToOne
-    @JoinColumn(name = "session_id")
-    private Session session;
+    @JoinColumn(name = "content_id")
+    private Content content;
     @ManyToOne
-    @JoinColumn(name = "payment_id")
+    @JoinColumn(name = "transaction_id")
     private Transaction transaction;
 }

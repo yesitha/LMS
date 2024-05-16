@@ -1,5 +1,6 @@
 package com.itgura.entity;
 
+import com.itgura.enums.ContentAccessType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
