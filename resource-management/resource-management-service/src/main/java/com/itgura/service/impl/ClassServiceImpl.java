@@ -1,6 +1,7 @@
 package com.itgura.service.impl;
 
 import com.itgura.entity.AClass;
+import com.itgura.exception.ValueNotExistException;
 import com.itgura.repository.ClassRepository;
 import com.itgura.response.dto.ClassResponseDto;
 import com.itgura.response.dto.mapper.ClassMapper;
@@ -18,14 +19,15 @@ public class ClassServiceImpl implements ClassService {
     @Autowired
     private ClassRepository classRepository;
 
-    private final ClassMapper classMapper =  new ClassMapper();
+    @Override
+    public ClassResponseDto getClassById(UUID id) throws ValueNotExistException {
+        AClass aClass = classRepository.findById(id)
+                .orElseThrow(() -> new ValueNotExistException("Class not found with id " + id));
+        return ClassMapper.INSTANCE.toDto(aClass);
+    }
     @Override
     public List<ClassResponseDto> getAllClasses() {
-        try {
-            List<AClass> all = classRepository.findAll();
-            return classMapper.toDtoList(all);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        List<AClass> classList = classRepository.findAll();
+        return ClassMapper.INSTANCE.toDtoList(classList);
     }
 }

@@ -17,7 +17,7 @@ public class ClassResponseDto {
     private UUID id;
     @JsonProperty("year")
     private Integer year;
-    @JsonProperty("name")
-    private String name;
+    @JsonProperty("class_name")
+    private String className;
 
 }

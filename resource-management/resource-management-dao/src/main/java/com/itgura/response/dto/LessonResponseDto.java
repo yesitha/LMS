@@ -21,8 +21,8 @@ public class LessonResponseDto {
     private String lessonName;
     @JsonProperty("lesson_number")
     private Integer lessonNumber;
-    @JsonProperty("description")
-    private String description;
+    @JsonProperty("lesson_description")
+    private String lessonDescription;
     @JsonProperty("start_date")
     private Date startDate;
     @JsonProperty("end_date")

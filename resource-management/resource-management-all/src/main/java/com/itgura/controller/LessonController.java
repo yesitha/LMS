@@ -65,7 +65,7 @@ public class LessonController {
         }
     }
     @GetMapping(ResourceManagementURI.LESSON + URIPrefix.GET)
-    public AppResponse<LessonResponseDto> getLesson(@PathVariable UUID id) {
+    public AppResponse<LessonResponseDto> getLesson(@RequestParam UUID id) {
         try {
             LessonResponseDto response = this.lessonService.findLesson(id);
             return AppResponse.ok(response);

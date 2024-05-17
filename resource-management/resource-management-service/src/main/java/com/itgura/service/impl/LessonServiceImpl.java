@@ -24,7 +24,7 @@ public class LessonServiceImpl implements LessonService {
     private LessonRepository lessonRepository;
     @Autowired
     private ClassRepository classRepository;
-    private final LessonMapper lessonMapper = new LessonMapper();
+
     @Override
     @Transactional
     public String saveLesson(LessonRequest request) throws ValueNotExistException {
@@ -114,17 +114,17 @@ public class LessonServiceImpl implements LessonService {
         Lesson lesson = lessonRepository.findById(id).orElseThrow(() -> new ValueNotExistException("Lesson not found with id " + id));
         // TODO: check if lesson is available for the users
         // TODO : set null unwanted data matching to the user
-        return lessonMapper.toDto(lesson);
+        return LessonMapper.INSTANCE.toDto(lesson);
     }
 
     @Override
     public List<LessonResponseDto> findAllLesson() {
         try {
-            List<Lesson> all = lessonRepository.findAll();
             // TODO: check if lesson is available for the users and set it
             // TODO: check if lesson is available for the logged in user and set it
             // TODO : set null unwanted data matching to the user
-            return lessonMapper.toDtoList(all);
+            List<Lesson> lessons = lessonRepository.findAll();
+            return LessonMapper.INSTANCE.toDtoList(lessons);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
