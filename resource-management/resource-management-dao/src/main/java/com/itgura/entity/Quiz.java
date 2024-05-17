@@ -15,7 +15,6 @@ import java.util.UUID;
 @Getter
 @PrimaryKeyJoinColumn(name = "quiz_id")
 public class Quiz extends Content{
-
     @Column(name = "quiz_name")
     private String quizName;
 

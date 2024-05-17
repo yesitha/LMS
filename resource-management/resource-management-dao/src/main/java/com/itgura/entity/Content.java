@@ -4,6 +4,7 @@ import com.itgura.enums.ContentAccessType;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
 import java.util.UUID;
 
 
@@ -36,5 +37,7 @@ public class Content {
     private Double price;
     @Enumerated(EnumType.STRING)
     private ContentAccessType contentAccessType;
+    @OneToMany(mappedBy = "content")
+    private List<StudentTransactionContent> studentTransactionContentList;
 
 }

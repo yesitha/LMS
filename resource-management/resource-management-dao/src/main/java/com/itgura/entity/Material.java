@@ -20,8 +20,7 @@ public class Material extends Content  {
     @Column(name = "material_name")
     private String materialName;
     @Column(name = "reference")
-    private UUID reference;
-
+    private String reference;
     @Column(name = "description")
     private String description;
     @ManyToOne
