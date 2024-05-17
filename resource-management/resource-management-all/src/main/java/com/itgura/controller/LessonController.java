@@ -45,7 +45,7 @@ public class LessonController {
         }
     }
     @DeleteMapping(ResourceManagementURI.LESSON + URIPrefix.DELETE)
-    public AppResponse<String> deleteLesson(@PathVariable UUID id){
+    public AppResponse<String> deleteLesson(@RequestParam UUID id){
         try {
             String s = lessonService.deleteLesson(id);
             return AppResponse.ok(s);
