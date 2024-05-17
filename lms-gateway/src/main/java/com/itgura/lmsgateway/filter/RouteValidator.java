@@ -20,6 +20,7 @@ public class RouteValidator {
             "/resource-management/public"
 
 
+
     );
 
     public Predicate<ServerHttpRequest> isSecured = request -> openApiEndpoints.stream()

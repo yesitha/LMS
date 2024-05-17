@@ -2,6 +2,7 @@ package com.itgura.lmsgateway.util;
 
 
 import io.jsonwebtoken.Jwts;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.KeyGenerator;
@@ -12,7 +13,8 @@ import java.util.Base64;
 
 @Component
 public class JwtUtil {
-    private static final String SECRET_KEY = "f2b21eeadc7f3693dbc373dca5f49400293d722eb955353c11250b9367cd1635";
+    @Value("${jwt.secretKey}")
+    private String SECRET_KEY;
 
 
     public void validateToken(final String token) throws NoSuchAlgorithmException {

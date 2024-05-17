@@ -1,6 +1,7 @@
 package com.itgura.authservice.entity;
 
 public enum Role {
-    USER,
+    STUDENT,
+    TEACHER,
     ADMIN
 }
