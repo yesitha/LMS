@@ -1,6 +1,5 @@
 package com.itgura.entity;
 
-import com.itgura.enums.ContentAccessType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,7 +22,7 @@ public class ClassStudent {
     private UUID classStudentId;
     @ManyToOne
     @JoinColumn(name = "class_id")
-    private Class aClass;
+    private AClass aClass;
     @ManyToOne
     @JoinColumn(name = "student_id")
     private Student student;

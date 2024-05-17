@@ -24,6 +24,6 @@ public class Fees {
     @Column(name = "amount")
     private Double amount;
     @OneToMany(mappedBy = "fees")
-    private List<Class> classList;
+    private List<AClass> classList;
 
 }
