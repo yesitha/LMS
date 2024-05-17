@@ -40,7 +40,7 @@ public class Transaction {
     private Student student;
     @ManyToOne
     @JoinColumn(name = "class_id")
-    private Class aClass;
+    private AClass aClass;
     @OneToMany(mappedBy = "transaction")
     private List<StudentTransactionContent> studentTransactionContentList;
 

@@ -32,5 +32,5 @@ public class Announcement {
     private UUID announcementBy;
     @ManyToOne
     @JoinColumn(name = "class_id")
-    private Class aClass;
+    private AClass aClass;
 }

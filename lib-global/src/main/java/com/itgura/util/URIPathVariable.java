@@ -11,6 +11,7 @@ public class URIPathVariable {
 	public static final String REF_NO = "ref-no";
 	public static final String API = "api";
 	public static final String DMS_MEDIATOR = "/dms-mediator";
+	public static final String RESOURCE_MANAGEMENT = "/resource-management";
 
 
 }

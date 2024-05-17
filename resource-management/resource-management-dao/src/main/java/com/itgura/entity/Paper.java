@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
-import java.util.UUID;
 
 @Entity
 @Table(name = "paper", schema = "resource_management")
@@ -30,7 +29,7 @@ public class Paper extends Content {
     private Lesson lesson;
     @ManyToOne
     @JoinColumn(name = "class_id")
-    private Class aClass;
+    private AClass aClass;
     @ManyToOne
     @JoinColumn(name = "paper_type_id")
     private PaperType paperType;
