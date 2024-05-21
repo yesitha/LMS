@@ -33,6 +33,6 @@ public class LessonRequest {
     @JsonProperty("session_list")
     private Double price;
     @JsonProperty("is_available_for_users")
-    private Boolean isAvailableForUsers;
+    private Boolean isAvailableForStudents;
 
 }

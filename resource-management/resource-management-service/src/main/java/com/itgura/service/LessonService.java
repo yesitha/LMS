@@ -13,5 +13,5 @@ public interface LessonService {
     String deleteLesson(UUID id) throws ValueNotExistException;
 
     LessonResponseDto findLesson(UUID id) throws ValueNotExistException;
-    List<LessonResponseDto> findAllLesson();
+    List<LessonResponseDto> findAllLesson(UUID classId);
 }

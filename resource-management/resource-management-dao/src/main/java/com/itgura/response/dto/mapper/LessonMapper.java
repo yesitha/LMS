@@ -14,7 +14,7 @@ public interface LessonMapper {
 
     @Mapping(source = "contentId", target = "id")
     @Mapping(source = "AClass.contentId", target = "classId")
-    @Mapping(source = "isAvailableForUsers", target = "isAvailableForAllUser")
+    @Mapping(source = "isAvailableForStudents", target = "isAvailableForAllStudents")
     @Mapping(source = "createdBy", target = "createdByUserId")
     @Mapping(source = "lastModifiedBy", target = "lastModifiedByUserId")
     LessonResponseDto toDto(Lesson lesson);

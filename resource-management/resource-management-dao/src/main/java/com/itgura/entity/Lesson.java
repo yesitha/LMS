@@ -37,6 +37,6 @@ public class Lesson extends Content {
     private List<Session> sessionList;
     @OneToMany(mappedBy = "lesson")
     private List<Quiz> quizList;
-    @Column(name = "is_available_for_users")
-    private Boolean isAvailableForUsers;
+    @Column(name = "is_available_for_students")
+    private Boolean isAvailableForStudents;
 }

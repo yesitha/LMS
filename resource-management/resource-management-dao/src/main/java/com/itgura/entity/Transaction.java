@@ -39,8 +39,8 @@ public class Transaction {
     @JoinColumn(name = "student_id")
     private Student student;
     @ManyToOne
-    @JoinColumn(name = "class_id")
-    private AClass aClass;
+    @JoinColumn(name = "content_id")
+    private Content content;
     @OneToMany(mappedBy = "transaction")
     private List<StudentTransactionContent> studentTransactionContentList;
 

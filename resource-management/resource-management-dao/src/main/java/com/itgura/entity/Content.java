@@ -39,5 +39,7 @@ public class Content {
     private ContentAccessType contentAccessType;
     @OneToMany(mappedBy = "content")
     private List<StudentTransactionContent> studentTransactionContentList;
+    @OneToMany(mappedBy = "content")
+    private List<Transaction> transactionList;
 
 }

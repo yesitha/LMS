@@ -29,6 +29,9 @@ public class LessonServiceImpl implements LessonService {
     @Transactional
     public String saveLesson(LessonRequest request) throws ValueNotExistException {
         try {
+            // TODO : get user id from security context
+            UUID userId = null;
+
             Lesson lesson = new Lesson();
             lesson.setLessonName(request.getLessonName());
             lesson.setLessonDescription(request.getDescription());
@@ -42,10 +45,11 @@ public class LessonServiceImpl implements LessonService {
                 throw new ValueNotExistException("Class not found with id " + request.getClassId());
             }
             lesson.setPrice(request.getPrice());
-            lesson.setIsAvailableForUsers(request.getIsAvailableForUsers());
+            lesson.setIsAvailableForStudents(request.getIsAvailableForStudents());
             lesson.setCreatedOn(new Date(System.currentTimeMillis()));
             lesson.setLastModifiedOn(new Date(System.currentTimeMillis()));
-            // TODO: set created by and last modified by
+            lesson.setCreatedBy(userId);
+            lesson.setLastModifiedBy(userId);
             lessonRepository.save(lesson);
             return "Lesson saved successfully";
         } catch (Exception e) {
@@ -57,6 +61,9 @@ public class LessonServiceImpl implements LessonService {
     @Transactional
     public String updateLesson(LessonRequest request, UUID id) throws ValueNotExistException {
         try{
+            // TODO : get user id from security context
+            UUID userId = null;
+
             Lesson lesson = lessonRepository.findById(id).orElseThrow(() -> new ValueNotExistException("Lesson not found with id " + id));
 
             if (request.getLessonName() != null && !request.getLessonName().isEmpty()) {
@@ -77,8 +84,8 @@ public class LessonServiceImpl implements LessonService {
             if (request.getLessonDuration() != null) {
                 lesson.setLessonDuration(request.getLessonDuration());
             }
-            if (request.getIsAvailableForUsers() != null) {
-                lesson.setIsAvailableForUsers(request.getIsAvailableForUsers());
+            if (request.getIsAvailableForStudents() != null) {
+                lesson.setIsAvailableForStudents(request.getIsAvailableForStudents());
             }
             if (request.getPrice() != null) {
                 lesson.setPrice(request.getPrice());
@@ -93,7 +100,7 @@ public class LessonServiceImpl implements LessonService {
             }
 
             lesson.setLastModifiedOn(new Date(System.currentTimeMillis()));
-            // TODO: set last modified by
+            lesson.setLastModifiedBy(userId);
             lessonRepository.save(lesson);
             return "Lesson patched successfully ";
         }catch (Exception e){
@@ -118,7 +125,7 @@ public class LessonServiceImpl implements LessonService {
     }
 
     @Override
-    public List<LessonResponseDto> findAllLesson() {
+    public List<LessonResponseDto> findAllLesson(UUID classId) {
         try {
             // TODO: check if lesson is available for the users and set it
             // TODO: check if lesson is available for the logged in user and set it

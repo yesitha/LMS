@@ -32,7 +32,6 @@ public class AClass extends Content  {
     private List<Schedule> scheduleList;
     @OneToMany(mappedBy = "aClass")
     private List<Announcement> announcementList;
-    @OneToMany(mappedBy = "aClass")
-    private List<Transaction> transactionList;
+
 
 }
