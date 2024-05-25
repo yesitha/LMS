@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Table(name = "class", schema = "resource_management")
@@ -16,7 +15,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @PrimaryKeyJoinColumn(name = "class_id")
-public class Class extends Content  {
+public class AClass extends Content  {
 
     @Column(name = "class_name")
     private String className;
@@ -33,7 +32,6 @@ public class Class extends Content  {
     private List<Schedule> scheduleList;
     @OneToMany(mappedBy = "aClass")
     private List<Announcement> announcementList;
-    @OneToMany(mappedBy = "aClass")
-    private List<Transaction> transactionList;
+
 
 }

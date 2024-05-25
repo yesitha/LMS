@@ -9,7 +9,7 @@ import lombok.Setter;
 import java.util.UUID;
 
 @Entity
-@Table(name = "student_session", schema = "resource_management")
+@Table(name = "student_transaction_content", schema = "resource_management")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

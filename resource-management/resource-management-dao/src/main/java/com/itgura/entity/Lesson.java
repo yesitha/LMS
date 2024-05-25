@@ -8,7 +8,6 @@ import lombok.Setter;
 
 import java.sql.Date;
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Table(name = "lesson", schema = "resource_management")
@@ -33,9 +32,11 @@ public class Lesson extends Content {
     private Integer lessonDuration;
     @ManyToOne
     @JoinColumn(name = "class_id")
-    private Class aClass;
+    private AClass aClass;
     @OneToMany(mappedBy = "lesson")
     private List<Session> sessionList;
     @OneToMany(mappedBy = "lesson")
     private List<Quiz> quizList;
+    @Column(name = "is_available_for_students")
+    private Boolean isAvailableForStudents;
 }

@@ -5,4 +5,5 @@ public class UserManagementURI {
     public static final String GET_USERS_ALL = "/all";
     public static final String USER_DETAILS = "/user-details";
 
+
 }
