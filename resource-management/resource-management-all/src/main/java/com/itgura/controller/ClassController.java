@@ -21,6 +21,7 @@ public class ClassController {
 
     @GetMapping(ResourceManagementURI.CLASS + ResourceManagementURI.ALL)
     public AppResponse<List<ClassResponseDto>> getAllClasses() {
+
         try {
             List<ClassResponseDto> response = this.classService.getAllClasses();
             return AppResponse.ok(response);
@@ -28,10 +29,12 @@ public class ClassController {
             return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");
         }
     }
+
     @PostMapping
-    public AppResponse<String> createClass(@RequestBody ClassRequest request) {
+    public AppResponse<String> createClass(@RequestHeader("Authorization") String jwtToken,@RequestBody ClassRequest request) {
+
         try {
-            String response = this.classService.create(request);
+            String response = this.classService.create(jwtToken,request);
             return AppResponse.ok(response);
         } catch (Exception e) {
             return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");

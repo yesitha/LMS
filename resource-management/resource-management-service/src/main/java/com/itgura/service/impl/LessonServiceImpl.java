@@ -2,17 +2,22 @@ package com.itgura.service.impl;
 
 import com.itgura.entity.AClass;
 import com.itgura.entity.Lesson;
+import com.itgura.exception.BadRequestRuntimeException;
 import com.itgura.exception.ValueNotExistException;
 import com.itgura.repository.ClassRepository;
 import com.itgura.repository.LessonRepository;
 import com.itgura.request.LessonRequest;
+import com.itgura.request.dto.UserResponseDto;
 import com.itgura.response.dto.LessonResponseDto;
 import com.itgura.response.dto.mapper.LessonMapper;
 import com.itgura.service.LessonService;
+import com.itgura.service.UserDetailService;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.ForbiddenException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.security.auth.login.CredentialNotFoundException;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -24,13 +29,21 @@ public class LessonServiceImpl implements LessonService {
     private LessonRepository lessonRepository;
     @Autowired
     private ClassRepository classRepository;
+    @Autowired
+    private UserDetailService userDetailService;
 
     @Override
     @Transactional
-    public String saveLesson(LessonRequest request) throws ValueNotExistException {
+    public String saveLesson(String token,LessonRequest request) throws ValueNotExistException {
         try {
-            // TODO : get user id from security context
-            UUID userId = null;
+            UserResponseDto loggedUserDetails = userDetailService.getLoggedUserDetails(token);
+            if(loggedUserDetails == null){
+                throw new ValueNotExistException("User not found");
+            }
+            if(!loggedUserDetails.getUserRoles().equals("ADMIN")){
+                throw new ForbiddenException("User is not authorized to perform this operation");
+            }
+            UUID userId = loggedUserDetails.getUserId();
 
             Lesson lesson = new Lesson();
             lesson.setLessonName(request.getLessonName());
@@ -59,10 +72,16 @@ public class LessonServiceImpl implements LessonService {
 
     @Override
     @Transactional
-    public String updateLesson(LessonRequest request, UUID id) throws ValueNotExistException {
+    public String updateLesson(String token,LessonRequest request, UUID id) throws ValueNotExistException {
         try{
-            // TODO : get user id from security context
-            UUID userId = null;
+            UserResponseDto loggedUserDetails = userDetailService.getLoggedUserDetails(token);
+            if(loggedUserDetails == null){
+                throw new ValueNotExistException("User not found");
+            }
+            if(!loggedUserDetails.getUserRoles().equals("ADMIN")){
+                throw new ForbiddenException("User is not authorized to perform this operation");
+            }
+            UUID userId = loggedUserDetails.getUserId();
 
             Lesson lesson = lessonRepository.findById(id).orElseThrow(() -> new ValueNotExistException("Lesson not found with id " + id));
 
@@ -109,7 +128,7 @@ public class LessonServiceImpl implements LessonService {
     }
 
     @Override
-    public String deleteLesson(UUID id) throws ValueNotExistException {
+    public String deleteLesson(String token,UUID id) throws ValueNotExistException {
         Lesson lesson = lessonRepository.findById(id).orElseThrow(() -> new ValueNotExistException("Lesson not found with id " + id));
         // TODO: check if lesson is associated with any user and delete
 
@@ -117,7 +136,7 @@ public class LessonServiceImpl implements LessonService {
     }
 
     @Override
-    public LessonResponseDto findLesson(UUID id) throws ValueNotExistException {
+    public LessonResponseDto findLesson(String token, UUID id) throws ValueNotExistException {
         Lesson lesson = lessonRepository.findById(id).orElseThrow(() -> new ValueNotExistException("Lesson not found with id " + id));
         // TODO: check if lesson is available for the users
         // TODO : set null unwanted data matching to the user
@@ -125,15 +144,19 @@ public class LessonServiceImpl implements LessonService {
     }
 
     @Override
-    public List<LessonResponseDto> findAllLesson(UUID classId) {
+    public List<LessonResponseDto> findAllLesson(String token,UUID classId) throws CredentialNotFoundException, BadRequestRuntimeException,ValueNotExistException {
         try {
-            // TODO: check if lesson is available for the users and set it
-            // TODO: check if lesson is available for the logged in user and set it
-            // TODO : set null unwanted data matching to the user
+            UserResponseDto loggedUserDetails = userDetailService.getLoggedUserDetails(token);
+            if(loggedUserDetails == null){
+                throw new ValueNotExistException("User not found");
+            }
             List<Lesson> lessons = lessonRepository.findAll();
-            return LessonMapper.INSTANCE.toDtoList(lessons);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+            List<LessonResponseDto> dtoList = LessonMapper.INSTANCE.toDtoList(lessons);
+            return dtoList;
+            }catch (Exception e){
+                throw new RuntimeException(e);
+            }
+
+
     }
 }

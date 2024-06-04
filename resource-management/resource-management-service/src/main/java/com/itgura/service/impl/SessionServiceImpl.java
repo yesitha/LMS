@@ -6,8 +6,11 @@ import com.itgura.exception.ValueNotExistException;
 import com.itgura.repository.LessonRepository;
 import com.itgura.repository.SessionRepository;
 import com.itgura.request.SessionRequest;
+import com.itgura.request.dto.UserResponseDto;
 import com.itgura.service.SessionService;
+import com.itgura.service.UserDetailService;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.ForbiddenException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,12 +24,20 @@ public class SessionServiceImpl implements SessionService {
     private LessonRepository lessonRepository;
     @Autowired
     private SessionRepository sessionRepository;
+    @Autowired
+    private UserDetailService userDetailService;
     @Override
     @Transactional
-    public String createSession(UUID lessonId, SessionRequest request) {
+    public String createSession(String token,UUID lessonId, SessionRequest request) {
         try{
-            // TODO : get user id from security context
-            UUID userId = null;
+            UserResponseDto loggedUserDetails = userDetailService.getLoggedUserDetails(token);
+            if(loggedUserDetails == null){
+                throw new ValueNotExistException("User not found");
+            }
+            if(!loggedUserDetails.getUserRoles().equals("ADMIN")){
+                throw new ForbiddenException("User is not authorized to perform this operation");
+            }
+            UUID userId = loggedUserDetails.getUserId();
             Lesson lesson;
             Optional<Lesson> byId = lessonRepository.findById(lessonId);
             if (byId.isPresent()) {
@@ -53,22 +64,22 @@ public class SessionServiceImpl implements SessionService {
     }
 
     @Override
-    public String updateSession(UUID sessionId, SessionRequest request) {
+    public String updateSession(String token,UUID sessionId, SessionRequest request) {
         return null;
     }
 
     @Override
-    public String deleteSession(UUID sessionId) {
+    public String deleteSession(String token,UUID sessionId) {
         return null;
     }
 
     @Override
-    public String findSession(UUID sessionId) {
+    public String findSession(String token,UUID sessionId) {
         return null;
     }
 
     @Override
-    public String findAllSession(UUID lessonId) {
+    public String findAllSession(String token,UUID lessonId) {
         return null;
     }
 }

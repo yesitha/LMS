@@ -14,5 +14,5 @@ import java.util.UUID;
 @Builder
 public class UserResponseDto {
     private UUID userId;
-    private List<String> userRoles;
+    private String userRoles;
 }

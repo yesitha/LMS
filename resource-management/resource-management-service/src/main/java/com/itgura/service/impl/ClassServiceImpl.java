@@ -6,10 +6,13 @@ import com.itgura.exception.ValueNotExistException;
 import com.itgura.repository.ClassRepository;
 import com.itgura.repository.FeesRepository;
 import com.itgura.request.ClassRequest;
+import com.itgura.request.dto.UserResponseDto;
 import com.itgura.response.dto.ClassResponseDto;
 import com.itgura.response.dto.mapper.ClassMapper;
 import com.itgura.service.ClassService;
+import com.itgura.service.UserDetailService;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.ForbiddenException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +28,8 @@ public class ClassServiceImpl implements ClassService {
     private ClassRepository classRepository;
     @Autowired
     private FeesRepository feesRepository;
+    @Autowired
+    private UserDetailService userDetailService;
 
 
     @Override
@@ -41,11 +46,16 @@ public class ClassServiceImpl implements ClassService {
 
     @Override
     @Transactional
-    public String create(ClassRequest request) throws ValueNotExistException {
+    public String create(String token,ClassRequest request) throws ValueNotExistException {
         try {
-            // TODO : get user id from security context
-            UUID userId = null;
-
+            UserResponseDto loggedUserDetails = userDetailService.getLoggedUserDetails(token);
+            if(loggedUserDetails == null){
+                throw new ValueNotExistException("User not found");
+            }
+            if(!loggedUserDetails.getUserRoles().equals("ADMIN")){
+                throw new ForbiddenException("User is not authorized to perform this operation");
+            }
+            UUID userId = loggedUserDetails.getUserId();
             Fees fees = new Fees();
             fees.setAmount(request.getFees());
             Fees savedFees = feesRepository.save(fees);

@@ -34,8 +34,8 @@ public class LessonResponseDto {
     private UUID classId;
     @JsonProperty("price")
     private Double price;
-    @JsonProperty("is_available_for_logged_user")
-    private Boolean isAvailableForLoggedUser;
+//    @JsonProperty("is_available_for_logged_user")
+//    private Boolean isAvailableForLoggedUser;
     @JsonProperty("is_available_for_all_students")
     private Boolean isAvailableForAllStudents;
     @JsonProperty("created_by_user_id")

@@ -19,7 +19,7 @@ import java.util.UUID;
 public class UserUtil {
 
 
-    public String getUserEmail(String jwtToken, String SECRET_KEY) throws BadRequestRuntimeException {
+    public static String getUserEmail(String jwtToken, String SECRET_KEY) throws BadRequestRuntimeException {
         if (jwtToken != null && jwtToken.startsWith("Bearer ")) {
             try {
                 String token = jwtToken.substring(7);
@@ -44,7 +44,7 @@ public class UserUtil {
 
     }
 
-    public List<String> getUserRoles(String jwtToken, String SECRET_KEY) throws BadRequestRuntimeException {
+    public static List<String> getUserRoles(String jwtToken, String SECRET_KEY) throws BadRequestRuntimeException {
         if (jwtToken != null && jwtToken.startsWith("Bearer ")) {
             try {
                 String token = jwtToken.substring(7);
