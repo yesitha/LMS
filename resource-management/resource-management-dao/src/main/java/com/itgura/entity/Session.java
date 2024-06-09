@@ -27,10 +27,10 @@ public class Session extends Content {
     private String  shortDescription;
     @Column(name = "date_and_time")
     private Date dateAndTime;
+    @Column(name = "session_number")
+    private Integer sessionNumber;
     @OneToMany(mappedBy = "session")
-    private List<Recording> classStudentList;
-    @OneToMany(mappedBy = "session")
-    private List<Material> lessonList;
+    private List<Material> materialList;
     @ManyToOne
     @JoinColumn(name = "lesson_id")
     private Lesson lesson;
