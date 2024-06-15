@@ -16,18 +16,19 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
+//If user pay for multiple months,then we save multiple transaction for each month with same order id
 public class Transaction {
     @Id
     @Lob
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID transactionId;
     private Double amount;
-    private String referenceNumber;
     private String note;
-    private Date transactionDate;
-    private String paymentMonthFor;
-    private String paymentYearFor;
+    private Date transactionDateTime;
+    private int paymentMonthFor;
+    private int paymentYearFor;
     private String studentEmail;
+    private String orderId;
     @OneToMany(mappedBy="transaction")
     private List<StudentTransactionContent> studentTransactionContentList;
 }

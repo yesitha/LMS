@@ -19,8 +19,8 @@ public class StudentTransactionContent {
     @Id
     @Lob
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "student_session_id")
-    private UUID studentSessionId;
+    @Column(name = "student_transaction_content_id")
+    private UUID studentTransactionContentId;
     private String studentEmail;
     private UUID contentId;
     @ManyToOne
