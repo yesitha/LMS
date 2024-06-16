@@ -29,6 +29,7 @@ public class Transaction {
     private int paymentYearFor;
     private String studentEmail;
     private String orderId;
+    private UUID classId;
     @OneToMany(mappedBy="transaction")
     private List<StudentTransactionContent> studentTransactionContentList;
 }

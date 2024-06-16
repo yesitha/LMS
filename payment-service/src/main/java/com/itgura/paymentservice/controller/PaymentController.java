@@ -79,7 +79,7 @@ public class PaymentController {
 
     }
 
-    //todo:controller to get monthly class fee and already paid months for a student
+    //todo:controller to get already paid months for a student
 
 
 }

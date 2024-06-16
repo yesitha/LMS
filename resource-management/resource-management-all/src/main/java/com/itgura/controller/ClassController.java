@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
@@ -35,6 +36,17 @@ public class ClassController {
 
         try {
             String response = this.classService.create(jwtToken,request);
+            return AppResponse.ok(response);
+        } catch (Exception e) {
+            return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");
+        }
+    }
+
+    //getClassFee
+    @GetMapping(ResourceManagementURI.CLASS +URIPathVariable.ID+ ResourceManagementURI.GET_CLASS_FEE)
+    public AppResponse<Double> getClassFee(@PathVariable UUID id) {
+        try {
+            Double response = this.classService.getClassFee(id);
             return AppResponse.ok(response);
         } catch (Exception e) {
             return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");

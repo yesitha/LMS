@@ -73,4 +73,13 @@ public class ClassServiceImpl implements ClassService {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public Double getClassFee(UUID id) throws ValueNotExistException {
+
+        AClass aClass = classRepository.findById(id)
+                .orElseThrow(() -> new ValueNotExistException("Class not found with id " + id));
+        return aClass.getFees().getAmount();
+
+    }
 }
