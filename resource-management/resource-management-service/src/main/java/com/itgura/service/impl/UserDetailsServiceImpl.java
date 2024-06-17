@@ -13,7 +13,7 @@ import javax.security.auth.login.CredentialNotFoundException;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailService {
-    @Value("${jwt.secret}")
+    @Value("${jwt.secretKey}")
     private String secretKey;
     @Autowired
     private UserDao userDao;

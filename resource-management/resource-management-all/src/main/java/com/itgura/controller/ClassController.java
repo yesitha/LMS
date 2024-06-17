@@ -8,6 +8,7 @@ import com.itgura.util.ResourceManagementURI;
 import com.itgura.util.URIPathVariable;
 import com.itgura.util.URIPrefix;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,12 +31,12 @@ public class ClassController {
             return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");
         }
     }
-
-    @PostMapping
-    public AppResponse<String> createClass(@RequestHeader("Authorization") String jwtToken,@RequestBody ClassRequest request) {
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PostMapping(ResourceManagementURI.CLASS + ResourceManagementURI.CREATE)
+    public AppResponse<String> createClass(@RequestBody ClassRequest request) {
 
         try {
-            String response = this.classService.create(jwtToken,request);
+            String response = this.classService.create(request);
             return AppResponse.ok(response);
         } catch (Exception e) {
             return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");
@@ -43,7 +44,8 @@ public class ClassController {
     }
 
     //getClassFee
-    @GetMapping(ResourceManagementURI.CLASS +URIPathVariable.ID+ ResourceManagementURI.GET_CLASS_FEE)
+
+    @GetMapping(ResourceManagementURI.CLASS + ResourceManagementURI.GET_CLASS_FEE+URIPrefix.BY_ID)
     public AppResponse<Double> getClassFee(@PathVariable UUID id) {
         try {
             Double response = this.classService.getClassFee(id);

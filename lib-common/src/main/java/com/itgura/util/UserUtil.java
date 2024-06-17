@@ -24,9 +24,9 @@ public class UserUtil {
 
 
     public static String getUserEmail(String jwtToken, String SECRET_KEY) throws BadRequestRuntimeException {
-        if (jwtToken != null && jwtToken.startsWith("Bearer ")) {
+        if (jwtToken != null) {
             try {
-                String token = jwtToken.substring(7);
+                String token = jwtToken;
                 Claims claims = Jwts.parser()
                         .setSigningKey(SECRET_KEY) // Replace with your actual secret key
                         .build()

@@ -75,6 +75,8 @@ public class SecurityConfig {
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
+            }else {
+                System.out.println("Authorization header is null");
             }
             filterChain.doFilter(request, response);
 

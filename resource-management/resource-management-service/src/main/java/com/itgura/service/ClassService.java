@@ -11,7 +11,7 @@ public interface ClassService {
     public ClassResponseDto getClassById(UUID id) throws ValueNotExistException;
     List<ClassResponseDto> getAllClasses();
 
-    public String create(String token,ClassRequest request) throws ValueNotExistException;
+    public String create(ClassRequest request) throws ValueNotExistException;
 
     Double getClassFee(UUID id) throws ValueNotExistException;
 }

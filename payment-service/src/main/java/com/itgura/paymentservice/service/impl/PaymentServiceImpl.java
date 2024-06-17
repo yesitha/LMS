@@ -1,5 +1,6 @@
 package com.itgura.paymentservice.service.impl;
 
+import com.itgura.dto.AppResponse;
 import com.itgura.exception.ApplicationException;
 import com.itgura.exception.BadRequestRuntimeException;
 import com.itgura.paymentservice.dto.request.saveMonthlyPaymentRequest;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Calendar;
@@ -58,12 +60,34 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     private double getMonthlyPayment(UUID classId) throws ApplicationException {
-        String url = "http://resource-management/class/" + classId + "/getClassFee";
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Bearer " + UserUtil.extractToken());
-        HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        ResponseEntity<Double> response = restTemplate.exchange(url, HttpMethod.GET, entity, Double.class);
-        return response.getBody();
-    }
+            String url = "http://lms-gateway/resource-management/class/getClassFee/"+classId;
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Authorization", "Bearer " + UserUtil.extractToken());
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+
+
+
+            try {
+                ResponseEntity<AppResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, AppResponse.class);
+                AppResponse response = responseEntity.getBody();
+
+                if (response == null || response.getData() == null) {
+                    throw new ApplicationException("Error while getting monthly payment: response or data is null");
+                }
+
+                return (double) response.getData();
+
+
+            } catch (HttpClientErrorException.Forbidden e) {
+                throw new ApplicationException("Access is forbidden: " + e.getMessage());
+            } catch (HttpClientErrorException e) {
+                throw new ApplicationException("Client error: " + e.getStatusCode() + " " + e.getMessage());
+            } catch (Exception e) {
+                throw new ApplicationException("Server error: " + e.getMessage());
+            }
+        }
+
+
+
 }

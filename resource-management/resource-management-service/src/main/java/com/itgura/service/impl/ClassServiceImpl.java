@@ -11,6 +11,7 @@ import com.itgura.response.dto.ClassResponseDto;
 import com.itgura.response.dto.mapper.ClassMapper;
 import com.itgura.service.ClassService;
 import com.itgura.service.UserDetailService;
+import com.itgura.util.UserUtil;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.ForbiddenException;
 import lombok.RequiredArgsConstructor;
@@ -46,9 +47,9 @@ public class ClassServiceImpl implements ClassService {
 
     @Override
     @Transactional
-    public String create(String token,ClassRequest request) throws ValueNotExistException {
+    public String create(ClassRequest request) throws ValueNotExistException {
         try {
-            UserResponseDto loggedUserDetails = userDetailService.getLoggedUserDetails(token);
+            UserResponseDto loggedUserDetails = userDetailService.getLoggedUserDetails(UserUtil.extractToken());
             if(loggedUserDetails == null){
                 throw new ValueNotExistException("User not found");
             }
