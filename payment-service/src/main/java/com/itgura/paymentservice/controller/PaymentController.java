@@ -2,7 +2,9 @@ package com.itgura.paymentservice.controller;
 
 import com.itgura.dto.AppRequest;
 import com.itgura.dto.AppResponse;
+import com.itgura.exception.BadRequestRuntimeException;
 import com.itgura.exception.ValueNotExistException;
+import com.itgura.paymentservice.dto.request.getPaidMothRequest;
 import com.itgura.paymentservice.dto.request.saveMonthlyPaymentRequest;
 import com.itgura.paymentservice.dto.response.PaymentDTO;
 import com.itgura.paymentservice.service.PaymentService;
@@ -79,7 +81,21 @@ public class PaymentController {
 
     }
 
-    //todo:controller to get already paid months for a student
+
+
+    @PostMapping("/getPaidMonths")
+    public AppResponse<int[]> getPaidMonths(@Valid @RequestBody AppRequest<getPaidMothRequest> request) {
+
+        try {
+            int[] res = paymentService.getPaidMonths(request.getData());
+            return AppResponse.ok(res);
+        } catch (BadRequestRuntimeException e) {
+            return AppResponse.error(null, e.getMessage(), "Bad Request", "400", "");
+        } catch (Exception e) {
+            return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");
+        }
+
+    }
 
 
 }
