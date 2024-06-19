@@ -3,7 +3,6 @@ package com.itgura.service.impl;
 import com.itgura.entity.AClass;
 import com.itgura.exception.ValueNotExistException;
 import com.itgura.repository.ClassRepository;
-import com.itgura.repository.FeesRepository;
 import com.itgura.request.ClassRequest;
 import com.itgura.request.dto.UserResponseDto;
 import com.itgura.response.dto.ClassResponseDto;
@@ -25,8 +24,6 @@ import java.util.UUID;
 public class ClassServiceImpl implements ClassService {
     @Autowired
     private ClassRepository classRepository;
-    @Autowired
-    private FeesRepository feesRepository;
     @Autowired
     private UserDetailService userDetailService;
 
