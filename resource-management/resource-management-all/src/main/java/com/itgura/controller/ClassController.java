@@ -3,6 +3,7 @@ package com.itgura.controller;
 import com.itgura.dto.AppResponse;
 import com.itgura.request.ClassRequest;
 import com.itgura.response.dto.ClassResponseDto;
+import com.itgura.response.hasPermissionResponse;
 import com.itgura.service.ClassService;
 import com.itgura.util.ResourceManagementURI;
 import com.itgura.util.URIPathVariable;
@@ -49,6 +50,17 @@ public class ClassController {
     public AppResponse<Double> getClassFee(@PathVariable UUID id) {
         try {
             Double response = this.classService.getClassFee(id);
+            return AppResponse.ok(response);
+        } catch (Exception e) {
+            return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");
+        }
+    }
+
+    @GetMapping(ResourceManagementURI.CLASS + ResourceManagementURI.test)
+    public AppResponse<List<hasPermissionResponse>> test() {
+
+        try {
+            List<hasPermissionResponse> response = this.classService.test();
             return AppResponse.ok(response);
         } catch (Exception e) {
             return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");

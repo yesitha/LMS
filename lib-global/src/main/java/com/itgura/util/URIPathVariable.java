@@ -14,4 +14,5 @@ public class URIPathVariable {
 	public static final String RESOURCE_MANAGEMENT = "/resource-management";
 
 
+    public static final String PAYMENT_SERVICE = "/payment-service";
 }
