@@ -7,4 +7,5 @@ public class ResourceManagementURI {
     public static final String SESSION = "/session";
     public static final String GET_CLASS_FEE = "/getClassFee";
     public static final String CREATE = "/create";
+    public static final String INMONTHANDCLASS = "/in-month-and-class";
 }

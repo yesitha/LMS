@@ -30,5 +30,16 @@ public class SessionController {
             return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");
         }
     }
+    @PostMapping(ResourceManagementURI.SESSION + URIPrefix.GET_ALL+ResourceManagementURI.INMONTHANDCLASS)
+    public AppResponse<List<UUID>> findAllSessionsInMonth(@RequestHeader("Authorization") String jwtToken,@PathVariable UUID classId, @PathVariable int year, @PathVariable int month) {
+        try {
+            List<UUID> s = sessionService.findAllSessionsInMonth(classId,year,month);
+            return AppResponse.ok(s);
+        } catch (ValueNotExistException e) {
+            return AppResponse.error(null, e.getMessage(), "Value Not Found", "404", "");
+        } catch (Exception e) {
+            return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");
+        }
+    }
 
 }
