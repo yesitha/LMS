@@ -36,8 +36,7 @@ public class Session extends Content {
     private Lesson lesson;
     @OneToMany(mappedBy = "session")
     private List<ScheduleSession> scheduleSessionList;
-    @OneToMany(mappedBy = "session")
-    private List<StudentTransactionContent> studentTransactionContentList;
+
     @Column(name = "is_available_for_students")
     private Boolean isAvailableForStudents;
 

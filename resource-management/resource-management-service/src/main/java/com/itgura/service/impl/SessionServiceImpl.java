@@ -3,6 +3,7 @@ package com.itgura.service.impl;
 import com.itgura.dao.ContentDao;
 import com.itgura.entity.Lesson;
 import com.itgura.entity.Session;
+import com.itgura.enums.ContentAccessType;
 import com.itgura.exception.BadRequestRuntimeException;
 import com.itgura.exception.ValueNotExistException;
 import com.itgura.repository.ContentRepository;
@@ -66,6 +67,7 @@ public class SessionServiceImpl implements SessionService {
             session.setCreatedOn(new Date(System.currentTimeMillis()));
             session.setLastModifiedOn(new Date(System.currentTimeMillis()));
             session.setLastModifiedBy(userId);
+            session.setContentAccessType(request.getContentAccesstype());
             sessionRepository.save(session);
             return "Session saved successfully";
         } catch (Exception e) {
@@ -88,6 +90,9 @@ public class SessionServiceImpl implements SessionService {
         } else {
             Session session = sessionRepository.findById(sessionId).orElseThrow(() -> new ValueNotExistException("Session not found with id " + sessionId));
             Boolean b = contentRepository.checkStudentAvailableContent(session.getContentId(), loggedUserDetails.getUserId());
+            if(session.getContentAccessType()== ContentAccessType.PUBLIC){
+                b = true;
+            }
             if (b) {
                 SessionResponseDto dto = SessionMapper.INSTANCE.toDto(session);
                 dto.setIsAvailableForLoggedUser(true);
@@ -135,6 +140,9 @@ public class SessionServiceImpl implements SessionService {
             for (Session session : allByLesson) {
                 Boolean b = contentRepository.checkStudentAvailableContent(session.getContentId(), loggedUserDetails.getUserId());
                 SessionResponseDto dto;
+                if(session.getContentAccessType()== ContentAccessType.PUBLIC){
+                    b = true;
+                }
                 if (b) {
                     dto = SessionMapper.INSTANCE.toDto(session);
                     dto.setIsAvailableForLoggedUser(true);
@@ -156,5 +164,10 @@ public class SessionServiceImpl implements SessionService {
             }
             return sessionResponseDtos;
         }
+    }
+
+    @Override
+    public List<UUID> findAllSessionsInMonth(UUID classId, int month, int year) throws CredentialNotFoundException, BadRequestRuntimeException, ValueNotExistException {
+        return null;
     }
 }

@@ -1,6 +1,7 @@
 package com.itgura.response.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.itgura.enums.ContentAccessType;
 import jakarta.persistence.Lob;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -52,5 +53,7 @@ public class LessonResponseDto {
     private String createdByName;
     @JsonProperty("updated_by_name")
     private String updatedByName;
+    @JsonProperty("content_access_type")
+    private ContentAccessType contentAccesstype;
 
 }

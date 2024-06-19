@@ -40,31 +40,33 @@ public class LessonServiceImpl implements LessonService {
             if(loggedUserDetails == null){
                 throw new ValueNotExistException("User not found");
             }
-            if(!loggedUserDetails.getUserRoles().equals("ADMIN")){
+            if(!(loggedUserDetails.getUserRoles().equals("ADMIN") || loggedUserDetails.getUserRoles().equals("TEACHER"))){
                 throw new ForbiddenException("User is not authorized to perform this operation");
-            }
-            UUID userId = loggedUserDetails.getUserId();
+            }else {
+                UUID userId = loggedUserDetails.getUserId();
 
-            Lesson lesson = new Lesson();
-            lesson.setLessonName(request.getLessonName());
-            lesson.setLessonDescription(request.getDescription());
-            lesson.setLessonNumber(request.getLessonNumber());
-            lesson.setStartDate(request.getStartDate());
-            lesson.setEndDate(request.getEndDate());
-            Optional<AClass> byId = classRepository.findById(request.getClassId());
-            if (byId.isPresent()) {
-                lesson.setAClass(byId.get());
-            } else {
-                throw new ValueNotExistException("Class not found with id " + request.getClassId());
+                Lesson lesson = new Lesson();
+                lesson.setLessonName(request.getLessonName());
+                lesson.setLessonDescription(request.getDescription());
+                lesson.setLessonNumber(request.getLessonNumber());
+                lesson.setStartDate(request.getStartDate());
+                lesson.setEndDate(request.getEndDate());
+                Optional<AClass> byId = classRepository.findById(request.getClassId());
+                if (byId.isPresent()) {
+                    lesson.setAClass(byId.get());
+                } else {
+                    throw new ValueNotExistException("Class not found with id " + request.getClassId());
+                }
+                lesson.setPrice(request.getPrice());
+                lesson.setIsAvailableForStudents(request.getIsAvailableForStudents());
+                lesson.setCreatedOn(new Date(System.currentTimeMillis()));
+                lesson.setLastModifiedOn(new Date(System.currentTimeMillis()));
+                lesson.setCreatedBy(userId);
+                lesson.setLastModifiedBy(userId);
+                lesson.setContentAccessType(request.getContentAccesstype());
+                lessonRepository.save(lesson);
+                return "Lesson saved successfully";
             }
-            lesson.setPrice(request.getPrice());
-            lesson.setIsAvailableForStudents(request.getIsAvailableForStudents());
-            lesson.setCreatedOn(new Date(System.currentTimeMillis()));
-            lesson.setLastModifiedOn(new Date(System.currentTimeMillis()));
-            lesson.setCreatedBy(userId);
-            lesson.setLastModifiedBy(userId);
-            lessonRepository.save(lesson);
-            return "Lesson saved successfully";
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -78,50 +80,55 @@ public class LessonServiceImpl implements LessonService {
             if(loggedUserDetails == null){
                 throw new ValueNotExistException("User not found");
             }
-            if(!loggedUserDetails.getUserRoles().equals("ADMIN")){
+            if(!(loggedUserDetails.getUserRoles().equals("ADMIN") || loggedUserDetails.getUserRoles().equals("TEACHER"))){
                 throw new ForbiddenException("User is not authorized to perform this operation");
-            }
-            UUID userId = loggedUserDetails.getUserId();
+            }else {
+                UUID userId = loggedUserDetails.getUserId();
 
-            Lesson lesson = lessonRepository.findById(id).orElseThrow(() -> new ValueNotExistException("Lesson not found with id " + id));
 
-            if (request.getLessonName() != null && !request.getLessonName().isEmpty()) {
-                lesson.setLessonName(request.getLessonName());
-            }
-            if (request.getLessonNumber() != null ) {
-                lesson.setLessonNumber(request.getLessonNumber());
-            }
-            if (request.getDescription() != null) {
-                lesson.setLessonDescription(request.getDescription());
-            }
-            if (request.getStartDate() != null) {
-                lesson.setStartDate(request.getStartDate());
-            }
-            if (request.getEndDate() != null) {
-                lesson.setEndDate(request.getEndDate());
-            }
-            if (request.getLessonDuration() != null) {
-                lesson.setLessonDuration(request.getLessonDuration());
-            }
-            if (request.getIsAvailableForStudents() != null) {
-                lesson.setIsAvailableForStudents(request.getIsAvailableForStudents());
-            }
-            if (request.getPrice() != null) {
-                lesson.setPrice(request.getPrice());
-            }
-            if (request.getClassId() != null) {
-                Optional<AClass> classOptional = classRepository.findById(request.getClassId());
-                if (classOptional.isPresent()) {
-                    lesson.setAClass(classOptional.get());
-                } else {
-                    throw new ValueNotExistException("Class not found with id " + request.getClassId());
+                Lesson lesson = lessonRepository.findById(id).orElseThrow(() -> new ValueNotExistException("Lesson not found with id " + id));
+
+                if (request.getLessonName() != null && !request.getLessonName().isEmpty()) {
+                    lesson.setLessonName(request.getLessonName());
                 }
-            }
+                if (request.getLessonNumber() != null) {
+                    lesson.setLessonNumber(request.getLessonNumber());
+                }
+                if (request.getDescription() != null) {
+                    lesson.setLessonDescription(request.getDescription());
+                }
+                if (request.getStartDate() != null) {
+                    lesson.setStartDate(request.getStartDate());
+                }
+                if (request.getEndDate() != null) {
+                    lesson.setEndDate(request.getEndDate());
+                }
+                if (request.getLessonDuration() != null) {
+                    lesson.setLessonDuration(request.getLessonDuration());
+                }
+                if (request.getIsAvailableForStudents() != null) {
+                    lesson.setIsAvailableForStudents(request.getIsAvailableForStudents());
+                }
+                if (request.getPrice() != null) {
+                    lesson.setPrice(request.getPrice());
+                }
+                if (request.getContentAccesstype() != null) {
+                    lesson.setContentAccessType(request.getContentAccesstype());
+                }
+                if (request.getClassId() != null) {
+                    Optional<AClass> classOptional = classRepository.findById(request.getClassId());
+                    if (classOptional.isPresent()) {
+                        lesson.setAClass(classOptional.get());
+                    } else {
+                        throw new ValueNotExistException("Class not found with id " + request.getClassId());
+                    }
+                }
 
-            lesson.setLastModifiedOn(new Date(System.currentTimeMillis()));
-            lesson.setLastModifiedBy(userId);
-            lessonRepository.save(lesson);
-            return "Lesson patched successfully ";
+                lesson.setLastModifiedOn(new Date(System.currentTimeMillis()));
+                lesson.setLastModifiedBy(userId);
+                lessonRepository.save(lesson);
+                return "Lesson patched successfully ";
+            }
         }catch (Exception e){
             throw new RuntimeException(e);
         }
@@ -149,13 +156,14 @@ public class LessonServiceImpl implements LessonService {
             UserResponseDto loggedUserDetails = userDetailService.getLoggedUserDetails(token);
             if(loggedUserDetails == null){
                 throw new ValueNotExistException("User not found");
+            }else {
+                List<Lesson> lessons = lessonRepository.findAll();
+                List<LessonResponseDto> dtoList = LessonMapper.INSTANCE.toDtoList(lessons);
+                return dtoList;
             }
-            List<Lesson> lessons = lessonRepository.findAll();
-            List<LessonResponseDto> dtoList = LessonMapper.INSTANCE.toDtoList(lessons);
-            return dtoList;
-            }catch (Exception e){
+        }catch (Exception e){
                 throw new RuntimeException(e);
-            }
+        }
 
 
     }

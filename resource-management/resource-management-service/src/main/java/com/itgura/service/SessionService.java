@@ -14,4 +14,6 @@ public interface SessionService {
 
     SessionResponseDto findSessionById(String token,UUID sessionId) throws ValueNotExistException, CredentialNotFoundException, BadRequestRuntimeException;
     List<SessionResponseDto> findAllSession(String token, UUID lessonId) throws CredentialNotFoundException, BadRequestRuntimeException, ValueNotExistException;
+    List<UUID> findAllSessionsInMonth(UUID classId, int month, int year) throws CredentialNotFoundException, BadRequestRuntimeException, ValueNotExistException;
+
 }

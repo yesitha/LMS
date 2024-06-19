@@ -1,6 +1,7 @@
 package com.itgura.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.itgura.enums.ContentAccessType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,5 +18,7 @@ public class ClassRequest {
     private Integer year;
     @JsonProperty("fees")
     private Double fees;
+    @JsonProperty("content_access_type")
+    private ContentAccessType contentAccesstype;
 
 }

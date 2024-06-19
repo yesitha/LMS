@@ -1,6 +1,7 @@
 package com.itgura.response.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.itgura.enums.ContentAccessType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,5 +20,7 @@ public class ClassResponseDto {
     private Integer year;
     @JsonProperty("class_name")
     private String className;
+    @JsonProperty("content_access_type")
+    private ContentAccessType contentAccesstype;
 
 }

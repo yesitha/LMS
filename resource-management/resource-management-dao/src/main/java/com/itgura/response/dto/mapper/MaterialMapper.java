@@ -15,11 +15,8 @@ public interface MaterialMapper {
     MaterialMapper INSTANCE = Mappers.getMapper(MaterialMapper.class);
 
     @Mapping(source = "contentId", target = "id")
-    @Mapping(source = "MaterialType.contentId", target = "classId")
-    @Mapping(source = "description", target = "materialDescription")
-    @Mapping(source = "description", target = "materialDescription")
+    @Mapping(source = "materialType", target = "materialType")
     @Mapping(source = "createdBy", target = "createdByUserId")
-
     @Mapping(source = "lastModifiedBy", target = "lastModifiedByUserId")
     MaterialResponseDto toDto(Material material);
 
