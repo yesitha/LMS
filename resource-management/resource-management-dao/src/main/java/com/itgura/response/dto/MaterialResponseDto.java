@@ -1,6 +1,7 @@
 package com.itgura.response.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.itgura.enums.ContentAccessType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,8 +20,8 @@ public class MaterialResponseDto {
     private UUID id;
     @JsonProperty("material_name")
     private String materialName;
-    @JsonProperty("material_description")
-    private String materialDescription;
+    @JsonProperty("description")
+    private String description;
     @JsonProperty("material_url")
     private String reference;
     @JsonProperty("file")
@@ -41,4 +42,6 @@ public class MaterialResponseDto {
     private Date lastModifiedOn;
     @JsonProperty("is_available_for_students")
     private Boolean isAvailableForStudents;
+    @JsonProperty("content_access_type")
+    private ContentAccessType contentAccesstype;
 }

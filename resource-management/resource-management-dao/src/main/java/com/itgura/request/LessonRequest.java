@@ -1,6 +1,7 @@
 package com.itgura.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.itgura.enums.ContentAccessType;
 import jakarta.persistence.Lob;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,5 +35,7 @@ public class LessonRequest {
     private Double price;
     @JsonProperty("is_available_for_users")
     private Boolean isAvailableForStudents;
+    @JsonProperty("content_access_type")
+    private ContentAccessType contentAccesstype;
 
 }

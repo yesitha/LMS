@@ -1,6 +1,7 @@
 package com.itgura.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.itgura.enums.ContentAccessType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,4 +22,6 @@ public class SessionRequest {
     private String description;
     @JsonProperty("topic")
     private String topic;
+    @JsonProperty("content_access_type")
+    private ContentAccessType contentAccesstype;
 }

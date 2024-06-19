@@ -46,10 +46,6 @@ public class Student {
     @OneToMany(mappedBy = "student")
     private List<ClassStudent> classStudentList;
     @OneToMany(mappedBy = "student")
-    private List<Transaction> transactionList;
-    @OneToMany(mappedBy = "student")
-    private List<StudentTransactionContent> studentTransactionContentList;
-    @OneToMany(mappedBy = "student")
     private List<StudentQuiz> studentQuizList;
 
 

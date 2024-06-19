@@ -14,6 +14,6 @@ public interface LessonService {
     String updateLesson(String token,LessonRequest request, UUID id) throws ValueNotExistException;
     String deleteLesson(String token,UUID id) throws ValueNotExistException;
 
-    LessonResponseDto findLesson(String tooken,UUID id) throws ValueNotExistException;
+    LessonResponseDto findLesson(String token,UUID id) throws ValueNotExistException;
     List<LessonResponseDto> findAllLesson(String token,UUID classId) throws CredentialNotFoundException, BadRequestRuntimeException,ValueNotExistException;
 }

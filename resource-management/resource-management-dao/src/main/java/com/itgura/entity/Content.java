@@ -37,9 +37,6 @@ public class Content {
     private Double price;
     @Enumerated(EnumType.STRING)
     private ContentAccessType contentAccessType;
-    @OneToMany(mappedBy = "content")
-    private List<StudentTransactionContent> studentTransactionContentList;
-    @OneToMany(mappedBy = "content")
-    private List<Transaction> transactionList;
+
 
 }

@@ -21,9 +21,8 @@ public class AClass extends Content  {
     private String className;
     @Column(name = "year")
     private Integer year;
-    @ManyToOne
-    @JoinColumn(name = "fees_id")
-    private Fees fees;
+    @Column(name = "fees")
+    private Double fees;
     @OneToMany(mappedBy = "aClass")
     private List<ClassStudent> classStudentList;
     @OneToMany(mappedBy = "aClass")

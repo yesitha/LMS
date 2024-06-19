@@ -1,7 +1,6 @@
 package com.itgura.service.impl;
 
 import com.itgura.entity.AClass;
-import com.itgura.entity.Fees;
 import com.itgura.exception.ValueNotExistException;
 import com.itgura.repository.ClassRepository;
 import com.itgura.repository.FeesRepository;
@@ -14,7 +13,6 @@ import com.itgura.service.UserDetailService;
 import com.itgura.util.UserUtil;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.ForbiddenException;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -57,19 +55,44 @@ public class ClassServiceImpl implements ClassService {
                 throw new ForbiddenException("User is not authorized to perform this operation");
             }
             UUID userId = loggedUserDetails.getUserId();
-            Fees fees = new Fees();
-            fees.setAmount(request.getFees());
-            Fees savedFees = feesRepository.save(fees);
+
             AClass aClass = new AClass();
             aClass.setClassName(request.getClassName());
-            aClass.setClassName(request.getClassName());
-            aClass.setFees(savedFees);
+            aClass.setFees(request.getFees());
             aClass.setCreatedBy(userId);
             aClass.setCreatedOn(new Date(System.currentTimeMillis()));
             aClass.setLastModifiedOn(new Date(System.currentTimeMillis()));
             aClass.setLastModifiedBy(userId);
+            aClass.setContentAccessType(request.getContentAccesstype());
             classRepository.save(aClass);
             return "Class saved successfully";
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public String update(String token,UUID classId, ClassRequest request) throws ValueNotExistException {
+        try{
+            UserResponseDto loggedUserDetails = userDetailService.getLoggedUserDetails(token);
+            if(loggedUserDetails == null){
+                throw new ValueNotExistException("User not found");
+            }
+            if(!(loggedUserDetails.getUserRoles().equals("ADMIN")|| loggedUserDetails.getUserRoles().equals("TEACHER"))){
+                throw new ForbiddenException("User is not authorized to perform this operation");
+            }else{
+                UUID userId = loggedUserDetails.getUserId();
+                AClass aClass = classRepository.findById(classId)
+                        .orElseThrow(() -> new ValueNotExistException("Class not found with id " + classId));
+                aClass.setClassName(request.getClassName());
+                aClass.setYear(request.getYear());
+                aClass.setFees(request.getFees());
+                aClass.setContentAccessType(request.getContentAccesstype());
+                aClass.setLastModifiedOn(new Date(System.currentTimeMillis()));
+                aClass.setLastModifiedBy(userId);
+                classRepository.save(aClass);
+                return "Class updated successfully";
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -80,7 +103,7 @@ public class ClassServiceImpl implements ClassService {
 
         AClass aClass = classRepository.findById(id)
                 .orElseThrow(() -> new ValueNotExistException("Class not found with id " + id));
-        return aClass.getFees().getAmount();
+        return aClass.getFees();
 
     }
 }
