@@ -1,8 +1,11 @@
 package com.itgura.paymentservice.service.impl;
 
+import com.itgura.exception.ApplicationException;
 import com.itgura.paymentservice.dto.request.hasPermissionRequest;
+import com.itgura.paymentservice.dto.response.hasPermissionResponse;
 import com.itgura.paymentservice.repository.StudentTransactionContentRepository;
 import com.itgura.paymentservice.service.PermissionService;
+import com.itgura.util.UserUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +13,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.fasterxml.jackson.databind.type.LogicalType.Map;
@@ -27,12 +32,15 @@ public class PermissionServiceImpl implements PermissionService {
     private StudentTransactionContentRepository studentTransactionContentRepository;
 
     @Override
-    public Boolean hasPermission(hasPermissionRequest data, String authorizationHeader) {
+    public Boolean hasPermission(hasPermissionRequest data) throws ApplicationException {
+
+        String authorizationHeader = UserUtil.extractToken();
+        List<hasPermissionResponse> response = new ArrayList<>();
 
 
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+        if (authorizationHeader != null) {
             try {
-                String token = authorizationHeader.substring(7);
+                String token = authorizationHeader;
                 Claims claims = Jwts.parser()
                         .setSigningKey(SECRET_KEY) // Replace with your actual secret key
                         .build()
@@ -44,15 +52,17 @@ public class PermissionServiceImpl implements PermissionService {
                 List<String> authorities = roles.stream()
                         .map(roleMap -> roleMap.get("authority"))
                         .toList();
-
-
-                if (authorities.contains("ADMIN") || authorities.contains("TEACHER")) {
-                    return true;
-                } else if (authorities.contains("STUDENT")) {
-                    return studentTransactionContentRepository.existsByStudentIdAndContentId(email, data.getContentId());
-                } else {
-                    return false;
+                List<UUID> contentIds = data.getContentIds();
+                for (UUID contentId : contentIds) {
+                    if (authorities.contains("ADMIN") || authorities.contains("TEACHER")) {
+                        response.add(new hasPermissionResponse(contentId, true));
+                    } else if (authorities.contains("STUDENT")) {
+                        response.add(new hasPermissionResponse(contentId, studentTransactionContentRepository.existsByStudentIdAndContentId(email, contentId)));
+                    } else {
+                        response.add(new hasPermissionResponse(contentId, false));
+                    }
                 }
+
             } catch (Exception e) {
                 System.out.println(e);
                 return false;

@@ -21,13 +21,12 @@ public class PermissionController {
 
 
     @PostMapping("/hasPermission")
-    public Boolean hasPermission(@RequestHeader(value = "Authorization", required = false) String authorizationHeader,
-                                 @Valid @RequestBody AppRequest<hasPermissionRequest> request) {
+    public Boolean hasPermission(@Valid @RequestBody AppRequest<hasPermissionRequest> request) {
 
        try{
 
 
-                return permissionService.hasPermission(request.getData(),authorizationHeader);
+                return permissionService.hasPermission(request.getData());
             } catch (Exception e) {
 
                 return false;

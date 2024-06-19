@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -16,14 +17,14 @@ import java.util.UUID;
 @Data
 public class hasPermissionRequest {
 
-//    @JsonProperty(value = "student_id")
-//    @NotNull(message = "student id is required")
-//    @ApiModelProperty(required = true, value = "student id is required")
+//    @JsonProperty(value = "user_email")
+//    @NotNull(message = "user_email is required")
+//    @ApiModelProperty(required = true, value = "user_email is required")
 //    private UUID studentId;
 
-   @JsonProperty(value = "content_id")
-    @NotNull(message = "content id is required")
-    @ApiModelProperty(required = true, value = "content id is required")
-    private UUID contentId;
+   @JsonProperty(value = "content_ids")
+    @NotNull(message = "content ids is required")
+    @ApiModelProperty(required = true, value = "content ids is required")
+    private List<UUID> contentIds;
 
 }
