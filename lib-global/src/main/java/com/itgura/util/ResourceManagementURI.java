@@ -6,4 +6,5 @@ public class ResourceManagementURI {
     public static final String LESSON = "/lesson";
     public static final String GET_CLASS_FEE = "/getClassFee";
     public static final String CREATE = "/create";
+    public static final String test = "/test";
 }

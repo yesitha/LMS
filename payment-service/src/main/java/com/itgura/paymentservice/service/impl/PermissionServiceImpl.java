@@ -32,7 +32,7 @@ public class PermissionServiceImpl implements PermissionService {
     private StudentTransactionContentRepository studentTransactionContentRepository;
 
     @Override
-    public Boolean hasPermission(hasPermissionRequest data) throws ApplicationException {
+    public List<hasPermissionResponse> hasPermission(hasPermissionRequest data) throws ApplicationException {
 
         String authorizationHeader = UserUtil.extractToken();
         List<hasPermissionResponse> response = new ArrayList<>();
@@ -53,6 +53,7 @@ public class PermissionServiceImpl implements PermissionService {
                         .map(roleMap -> roleMap.get("authority"))
                         .toList();
                 List<UUID> contentIds = data.getContentIds();
+                System.out.println("contentIds = " + contentIds);
                 for (UUID contentId : contentIds) {
                     if (authorities.contains("ADMIN") || authorities.contains("TEACHER")) {
                         response.add(new hasPermissionResponse(contentId, true));
@@ -62,15 +63,18 @@ public class PermissionServiceImpl implements PermissionService {
                         response.add(new hasPermissionResponse(contentId, false));
                     }
                 }
+                System.out.println("response = " + response);
+                return response;
 
             } catch (Exception e) {
                 System.out.println(e);
-                return false;
+                return null;
+
             }
 
         }
 
 
-        return false;
+        return null;
     }
 }
