@@ -29,7 +29,7 @@ public class Address {
     private String line2;
     @Column(name = "city")
     private String city;
-    @OneToMany(mappedBy = "address")
+    @OneToMany(mappedBy = "address",cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Student> studentList;
 
 }

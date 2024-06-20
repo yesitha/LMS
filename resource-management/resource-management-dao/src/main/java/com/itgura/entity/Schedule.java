@@ -23,8 +23,8 @@ public class Schedule {
     private UUID scheduleId;
     @Column(name = "schedule_name")
     private String scheduleName;
-    @ManyToOne
-    @JoinColumn(name = "class_id")
+    @OneToOne
+    @JoinColumn(name = "class_id", unique = true) // Unique relationship with AClass
     private AClass aClass;
     @OneToMany(mappedBy = "schedule")
     private List<ScheduleSession> scheduleSessionList;

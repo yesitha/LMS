@@ -19,6 +19,7 @@ public interface SessionMapper {
 
     @Mapping(source = "createdBy", target = "createdByUserId")
     @Mapping(source = "lastModifiedBy", target = "lastModifiedByUserId")
+    @Mapping(source = "contentAccessType", target = "contentAccesstype")
 
     SessionResponseDto toDto(Session session);
 

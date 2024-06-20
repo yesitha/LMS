@@ -3,6 +3,7 @@ package com.itgura.service.impl;
 import com.itgura.dao.ContentDao;
 import com.itgura.entity.*;
 import com.itgura.enums.ContentAccessType;
+import com.itgura.exception.ApplicationException;
 import com.itgura.exception.BadRequestRuntimeException;
 import com.itgura.exception.ValueNotExistException;
 import com.itgura.repository.*;
@@ -13,6 +14,7 @@ import com.itgura.response.dto.mapper.ClassMapper;
 import com.itgura.response.dto.mapper.SessionMapper;
 import com.itgura.service.SessionService;
 import com.itgura.service.UserDetailService;
+import com.itgura.util.UserUtil;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.ForbiddenException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,9 +44,9 @@ public class SessionServiceImpl implements SessionService {
 
     @Override
     @Transactional
-    public String createSession(String token, UUID lessonId, SessionRequest request) {
+    public String createSession( UUID lessonId, SessionRequest request) {
         try {
-            UserResponseDto loggedUserDetails = userDetailService.getLoggedUserDetails(token);
+            UserResponseDto loggedUserDetails = userDetailService.getLoggedUserDetails(UserUtil.extractToken());
             if (loggedUserDetails == null) {
                 throw new ValueNotExistException("User not found");
             }
@@ -82,8 +84,8 @@ public class SessionServiceImpl implements SessionService {
 
     @Override
     @Transactional
-    public SessionResponseDto findSessionById(String token, UUID sessionId) throws ValueNotExistException, CredentialNotFoundException, BadRequestRuntimeException {
-        UserResponseDto loggedUserDetails = userDetailService.getLoggedUserDetails(token);
+    public SessionResponseDto findSessionById( UUID sessionId) throws ApplicationException, CredentialNotFoundException, BadRequestRuntimeException {
+        UserResponseDto loggedUserDetails = userDetailService.getLoggedUserDetails(UserUtil.extractToken());
 
         if (loggedUserDetails == null) {
             throw new ValueNotExistException("User not found");
@@ -122,8 +124,8 @@ public class SessionServiceImpl implements SessionService {
 
     @Override
     @Transactional
-    public List<SessionResponseDto> findAllSession(String token, UUID lessonId) throws CredentialNotFoundException, BadRequestRuntimeException, ValueNotExistException {
-        UserResponseDto loggedUserDetails = userDetailService.getLoggedUserDetails(token);
+    public List<SessionResponseDto> findAllSession( UUID lessonId) throws CredentialNotFoundException, BadRequestRuntimeException, ApplicationException {
+        UserResponseDto loggedUserDetails = userDetailService.getLoggedUserDetails(UserUtil.extractToken());
         Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new ValueNotExistException("Lesson not found with id " + lessonId));
 
 
@@ -192,9 +194,9 @@ public class SessionServiceImpl implements SessionService {
     }
 
     private boolean addSessionToSchedule(UUID classId,Session session) throws ValueNotExistException {
-
-        Schedule byAClassContentId = scheduleRepository.findByAClass(session.getContentId());
         AClass aClass = classRepository.findById(classId).orElseThrow(() -> new ValueNotExistException("Class not found with id " + classId));
+        Schedule byAClassContentId = scheduleRepository.findScheduleByAClass(aClass);
+
         if (byAClassContentId == null) {
             Schedule schedule = new Schedule();
             schedule.setAClass(aClass);

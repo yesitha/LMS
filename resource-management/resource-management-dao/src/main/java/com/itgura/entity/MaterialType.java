@@ -23,6 +23,6 @@ public class MaterialType {
     private UUID materialTypeId;
     @Column(name = "material_type")
     private String materialType;
-    @OneToMany(mappedBy = "materialType")
+    @OneToMany(mappedBy = "materialType",cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Material> materialList;
 }

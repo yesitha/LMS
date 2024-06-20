@@ -20,9 +20,9 @@ public class SessionController {
     @Autowired
     private SessionService sessionService;
     @GetMapping(ResourceManagementURI.SESSION + URIPrefix.GET_ALL)
-    public AppResponse<List<SessionResponseDto>> getAllSessions(@RequestHeader("Authorization") String jwtToken, @PathVariable UUID lessonId) {
+    public AppResponse<List<SessionResponseDto>> getAllSessions( @PathVariable UUID lessonId) {
         try {
-            List<SessionResponseDto> s = sessionService.findAllSession(jwtToken,lessonId);
+            List<SessionResponseDto> s = sessionService.findAllSession(lessonId);
             return AppResponse.ok(s);
         } catch (ValueNotExistException e) {
             return AppResponse.error(null, e.getMessage(), "Value Not Found", "404", "");
@@ -31,7 +31,7 @@ public class SessionController {
         }
     }
     @PostMapping(ResourceManagementURI.SESSION + URIPrefix.GET_ALL+ResourceManagementURI.INMONTHANDCLASS)
-    public AppResponse<List<UUID>> findAllSessionsInMonth(@RequestHeader("Authorization") String jwtToken,@PathVariable UUID classId, @PathVariable int year, @PathVariable int month) {
+    public AppResponse<List<UUID>> findAllSessionsInMonth(@PathVariable UUID classId, @PathVariable int year, @PathVariable int month) {
         try {
             List<UUID> s = sessionService.findAllSessionsInMonth(classId,year,month);
             return AppResponse.ok(s);

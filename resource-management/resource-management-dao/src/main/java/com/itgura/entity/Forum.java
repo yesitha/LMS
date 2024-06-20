@@ -26,6 +26,6 @@ public class Forum extends Content{
     @OneToOne
     @JoinColumn(name = "lesson_id")
     private Lesson lesson;
-    @OneToMany(mappedBy = "forum")
+    @OneToMany(mappedBy = "forum",cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<ForumQuestion> forumQuestionList;
 }

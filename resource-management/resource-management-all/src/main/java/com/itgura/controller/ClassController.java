@@ -52,6 +52,25 @@ public class ClassController {
             Double response = this.classService.getClassFee(id);
             return AppResponse.ok(response);
         } catch (Exception e) {
+            e.printStackTrace();
+            return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");
+        }
+    }
+    @GetMapping(ResourceManagementURI.CLASS +URIPrefix.BY_ID)
+    public AppResponse<ClassResponseDto> getClass(@PathVariable UUID id) {
+        try {
+            ClassResponseDto classById = this.classService.getClassById(id);
+            return AppResponse.ok(classById);
+        } catch (Exception e) {
+            return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");
+        }
+    }
+    @PatchMapping(ResourceManagementURI.CLASS + URIPrefix.UPDATE + URIPrefix.ID)
+    public AppResponse<String> updateClass(@PathVariable("id") UUID id, @RequestBody ClassRequest request) {
+        try {
+            String update = this.classService.update(id, request);
+            return AppResponse.ok(update);
+        } catch (Exception e) {
             return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");
         }
     }
@@ -63,6 +82,7 @@ public class ClassController {
             List<hasPermissionResponse> response = this.classService.test();
             return AppResponse.ok(response);
         } catch (Exception e) {
+            e.printStackTrace();
             return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");
         }
     }

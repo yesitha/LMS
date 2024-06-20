@@ -37,6 +37,6 @@ public class StudentQuiz {
     private java.sql.Time endedTime;
     @Column(name = "duration_in_minutes")
     private Integer durationInMinutes;
-    @OneToMany(mappedBy = "studentQuiz")
+    @OneToMany(mappedBy = "studentQuiz",cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<StudentAnswerQuiz> studentAnswerQuizList;
 }

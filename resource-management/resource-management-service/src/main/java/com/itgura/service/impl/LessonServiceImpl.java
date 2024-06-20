@@ -2,6 +2,7 @@ package com.itgura.service.impl;
 
 import com.itgura.entity.AClass;
 import com.itgura.entity.Lesson;
+import com.itgura.exception.ApplicationException;
 import com.itgura.exception.BadRequestRuntimeException;
 import com.itgura.exception.ValueNotExistException;
 import com.itgura.repository.ClassRepository;
@@ -12,16 +13,15 @@ import com.itgura.response.dto.LessonResponseDto;
 import com.itgura.response.dto.mapper.LessonMapper;
 import com.itgura.service.LessonService;
 import com.itgura.service.UserDetailService;
+import com.itgura.util.UserUtil;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.ForbiddenException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.security.auth.login.CredentialNotFoundException;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class LessonServiceImpl implements LessonService {
@@ -34,9 +34,9 @@ public class LessonServiceImpl implements LessonService {
 
     @Override
     @Transactional
-    public String saveLesson(String token,LessonRequest request) throws ValueNotExistException {
+    public String saveLesson(LessonRequest request) throws ValueNotExistException {
         try {
-            UserResponseDto loggedUserDetails = userDetailService.getLoggedUserDetails(token);
+            UserResponseDto loggedUserDetails = userDetailService.getLoggedUserDetails(UserUtil.extractToken());
             if(loggedUserDetails == null){
                 throw new ValueNotExistException("User not found");
             }
@@ -74,9 +74,9 @@ public class LessonServiceImpl implements LessonService {
 
     @Override
     @Transactional
-    public String updateLesson(String token,LessonRequest request, UUID id) throws ValueNotExistException {
+    public String updateLesson(LessonRequest request, UUID id) throws ValueNotExistException {
         try{
-            UserResponseDto loggedUserDetails = userDetailService.getLoggedUserDetails(token);
+            UserResponseDto loggedUserDetails = userDetailService.getLoggedUserDetails(UserUtil.extractToken());
             if(loggedUserDetails == null){
                 throw new ValueNotExistException("User not found");
             }
@@ -135,31 +135,78 @@ public class LessonServiceImpl implements LessonService {
     }
 
     @Override
-    public String deleteLesson(String token,UUID id) throws ValueNotExistException {
+    @Transactional
+    public String deleteLesson(UUID id) throws ApplicationException, CredentialNotFoundException, BadRequestRuntimeException {
+        UserResponseDto loggedUserDetails = userDetailService.getLoggedUserDetails(UserUtil.extractToken());
         Lesson lesson = lessonRepository.findById(id).orElseThrow(() -> new ValueNotExistException("Lesson not found with id " + id));
-        // TODO: check if lesson is associated with any user and delete
+        if(loggedUserDetails.getUserRoles().equals("ADMIN") || loggedUserDetails.getUserRoles().equals("TEACHER")) {
+            try{
+                lessonRepository.deleteById(id);
+                return "Lesson deleted successfully with id " + id  ;
+            } catch (Exception e) {
+                throw new ApplicationException("Error while deleting lesson with id " + id);
+            }
 
-        return "Lesson deleted successfully with id " + id  ;
+        } else{
+            throw new ForbiddenException("User is not authorized to perform this operation");
+
+        }
+
+
     }
 
     @Override
-    public LessonResponseDto findLesson(String token, UUID id) throws ValueNotExistException {
-        Lesson lesson = lessonRepository.findById(id).orElseThrow(() -> new ValueNotExistException("Lesson not found with id " + id));
-        // TODO: check if lesson is available for the users
-        // TODO : set null unwanted data matching to the user
-        return LessonMapper.INSTANCE.toDto(lesson);
-    }
-
-    @Override
-    public List<LessonResponseDto> findAllLesson(String token,UUID classId) throws CredentialNotFoundException, BadRequestRuntimeException,ValueNotExistException {
+    @Transactional
+    public LessonResponseDto findLesson( UUID id) throws ValueNotExistException {
         try {
-            UserResponseDto loggedUserDetails = userDetailService.getLoggedUserDetails(token);
+            UserResponseDto loggedUserDetails = userDetailService.getLoggedUserDetails(UserUtil.extractToken());
+            if (loggedUserDetails == null) {
+                throw new ValueNotExistException("User not found");
+            } else {
+                Lesson lesson = lessonRepository.findById(id).orElseThrow(() -> new ValueNotExistException("Lesson not found with id " + id));
+                if (loggedUserDetails.getUserRoles().equals("ADMIN") || loggedUserDetails.getUserRoles().equals("TEACHER")) {
+
+                    return LessonMapper.INSTANCE.toDto(lesson);
+                } else {
+
+                    if (lesson.getIsAvailableForStudents()) {
+                        return LessonMapper.INSTANCE.toDto(lesson);
+                    } else {
+                        throw new ForbiddenException("User is not authorized to perform this operation");
+                    }
+                }
+            }
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    @Transactional
+    public List<LessonResponseDto> findAllLesson(UUID classId) throws CredentialNotFoundException, BadRequestRuntimeException,ValueNotExistException {
+        try {
+            UserResponseDto loggedUserDetails = userDetailService.getLoggedUserDetails(UserUtil.extractToken());
             if(loggedUserDetails == null){
                 throw new ValueNotExistException("User not found");
             }else {
-                List<Lesson> lessons = lessonRepository.findAll();
-                List<LessonResponseDto> dtoList = LessonMapper.INSTANCE.toDtoList(lessons);
-                return dtoList;
+                if(loggedUserDetails.getUserRoles().equals("ADMIN") || loggedUserDetails.getUserRoles().equals("TEACHER")){
+                    List<Lesson> lessons = lessonRepository.findAll();
+                    List<LessonResponseDto> dtoList = LessonMapper.INSTANCE.toDtoList(lessons);
+                    dtoList.sort(Comparator.comparing(LessonResponseDto::getLessonNumber));
+                    return dtoList;
+                }else{
+                    List<Lesson> lessons = lessonRepository.findAll();
+                    List<LessonResponseDto> dtoList = LessonMapper.INSTANCE.toDtoList(lessons);
+                    dtoList = dtoList.stream()
+                            .filter(LessonResponseDto::getIsAvailableForAllStudents)
+                            .collect(Collectors.toList());
+
+                    // Sort the filtered list based on lessonNumber
+                    dtoList.sort(Comparator.comparing(LessonResponseDto::getLessonNumber));
+                    return dtoList;
+
+                }
+
             }
         }catch (Exception e){
                 throw new RuntimeException(e);

@@ -31,7 +31,7 @@ public class LessonRequest {
     @JsonProperty("class_id")
     @Lob
     private UUID classId;
-    @JsonProperty("session_list")
+    @JsonProperty("price")
     private Double price;
     @JsonProperty("is_available_for_users")
     private Boolean isAvailableForStudents;

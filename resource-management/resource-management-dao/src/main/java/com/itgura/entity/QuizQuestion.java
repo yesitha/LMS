@@ -29,7 +29,7 @@ public class QuizQuestion extends Content {
     @ManyToOne
     @JoinColumn(name = "quiz_id")
     private Quiz quiz;
-    @OneToMany(mappedBy = "quizQuestion")
+    @OneToMany(mappedBy = "quizQuestion",cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<StudentAnswerQuiz> studentAnswerQuizList;
 
 }

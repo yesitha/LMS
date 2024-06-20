@@ -27,9 +27,9 @@ public class Quiz extends Content{
     @ManyToOne
     @JoinColumn(name = "lesson_id")
     private Lesson lesson;
-    @OneToMany(mappedBy = "quiz")
+    @OneToMany(mappedBy = "quiz",cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<QuizQuestion> quizQuestionList;
-    @OneToMany(mappedBy = "quiz")
+    @OneToMany(mappedBy = "quiz",cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<StudentQuiz> studentQuizList;
 
 }

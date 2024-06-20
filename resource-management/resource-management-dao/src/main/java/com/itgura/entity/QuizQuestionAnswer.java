@@ -22,8 +22,8 @@ public class QuizQuestionAnswer extends Content{
     @ManyToOne
     @JoinColumn(name = "quiz_question_id")
     private QuizQuestion quizQuestion;
-    @OneToMany(mappedBy = "studentAnswer")
+    @OneToMany(mappedBy = "studentAnswer",cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<StudentAnswerQuiz> studentAnswerQuizList;
-    @OneToMany(mappedBy = "correctAnswer")
+    @OneToMany(mappedBy = "correctAnswer",cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<StudentAnswerQuiz> correctAnswerQuizList;
 }

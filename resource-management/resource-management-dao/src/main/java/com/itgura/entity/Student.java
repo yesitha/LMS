@@ -43,9 +43,9 @@ public class Student {
     @ManyToOne
     @JoinColumn(name = "address_id")
     private Address address;
-    @OneToMany(mappedBy = "student")
+    @OneToMany(mappedBy = "student",cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<ClassStudent> classStudentList;
-    @OneToMany(mappedBy = "student")
+    @OneToMany(mappedBy = "student",cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<StudentQuiz> studentQuizList;
 
 

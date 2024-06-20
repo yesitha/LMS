@@ -1,5 +1,6 @@
 package com.itgura.service;
 
+import com.itgura.exception.ApplicationException;
 import com.itgura.exception.BadRequestRuntimeException;
 import com.itgura.exception.ValueNotExistException;
 import com.itgura.request.SessionRequest;
@@ -10,10 +11,10 @@ import java.util.List;
 import java.util.UUID;
 
 public interface SessionService {
-    String createSession(String token,UUID lessonId, SessionRequest request);
+    String createSession(UUID lessonId, SessionRequest request);
 
-    SessionResponseDto findSessionById(String token,UUID sessionId) throws ValueNotExistException, CredentialNotFoundException, BadRequestRuntimeException;
-    List<SessionResponseDto> findAllSession(String token, UUID lessonId) throws CredentialNotFoundException, BadRequestRuntimeException, ValueNotExistException;
+    SessionResponseDto findSessionById(UUID sessionId) throws ApplicationException, CredentialNotFoundException, BadRequestRuntimeException;
+    List<SessionResponseDto> findAllSession( UUID lessonId) throws CredentialNotFoundException, BadRequestRuntimeException, ApplicationException;
     List<UUID> findAllSessionsInMonth(UUID classId, int month, int year) throws CredentialNotFoundException, BadRequestRuntimeException, ValueNotExistException;
 
 }

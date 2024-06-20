@@ -26,7 +26,7 @@ public class ForumQuestion extends Content {
     @ManyToOne
     @JoinColumn(name = "forum_id")
     private Forum forum;
-    @OneToMany(mappedBy = "forumQuestion")
+    @OneToMany(mappedBy = "forumQuestion",cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<ForumQuestionReply> forumQuestionReplyList;
 
 }

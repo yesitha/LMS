@@ -29,12 +29,12 @@ public class Session extends Content {
     private Date dateAndTime;
     @Column(name = "session_number")
     private Integer sessionNumber;
-    @OneToMany(mappedBy = "session")
+    @OneToMany(mappedBy = "session",cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Material> materialList;
     @ManyToOne
     @JoinColumn(name = "lesson_id")
     private Lesson lesson;
-    @OneToMany(mappedBy = "session")
+    @OneToMany(mappedBy = "session",cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<ScheduleSession> scheduleSessionList;
 
     @Column(name = "is_available_for_students")

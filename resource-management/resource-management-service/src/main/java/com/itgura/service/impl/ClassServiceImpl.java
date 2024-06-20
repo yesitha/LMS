@@ -3,7 +3,6 @@ package com.itgura.service.impl;
 import com.itgura.dto.AppRequest;
 import com.itgura.dto.AppResponse;
 import com.itgura.entity.AClass;
-import com.itgura.entity.Fees;
 import com.itgura.exception.ApplicationException;
 import com.itgura.exception.ValueNotExistException;
 import com.itgura.repository.ClassRepository;
@@ -46,12 +45,14 @@ public class ClassServiceImpl implements ClassService {
 
 
     @Override
+    @Transactional
     public ClassResponseDto getClassById(UUID id) throws ValueNotExistException {
         AClass aClass = classRepository.findById(id)
                 .orElseThrow(() -> new ValueNotExistException("Class not found with id " + id));
         return ClassMapper.INSTANCE.toDto(aClass);
     }
     @Override
+    @Transactional
     public List<ClassResponseDto> getAllClasses() {
         List<AClass> classList = classRepository.findAll();
         return ClassMapper.INSTANCE.toDtoList(classList);
@@ -72,6 +73,7 @@ public class ClassServiceImpl implements ClassService {
 
             AClass aClass = new AClass();
             aClass.setClassName(request.getClassName());
+            aClass.setYear(request.getYear());
             aClass.setFees(request.getFees());
             aClass.setCreatedBy(userId);
             aClass.setCreatedOn(new Date(System.currentTimeMillis()));
@@ -86,9 +88,10 @@ public class ClassServiceImpl implements ClassService {
     }
 
     @Override
-    public String update(String token,UUID classId, ClassRequest request) throws ValueNotExistException {
+    @Transactional
+    public String update(UUID classId, ClassRequest request) throws ValueNotExistException {
         try{
-            UserResponseDto loggedUserDetails = userDetailService.getLoggedUserDetails(token);
+            UserResponseDto loggedUserDetails = userDetailService.getLoggedUserDetails(UserUtil.extractToken());
             if(loggedUserDetails == null){
                 throw new ValueNotExistException("User not found");
             }
@@ -101,6 +104,7 @@ public class ClassServiceImpl implements ClassService {
                 aClass.setClassName(request.getClassName());
                 aClass.setYear(request.getYear());
                 aClass.setFees(request.getFees());
+
                 aClass.setContentAccessType(request.getContentAccesstype());
                 aClass.setLastModifiedOn(new Date(System.currentTimeMillis()));
                 aClass.setLastModifiedBy(userId);
@@ -113,6 +117,7 @@ public class ClassServiceImpl implements ClassService {
     }
 
     @Override
+    @Transactional
     public Double getClassFee(UUID id) throws ValueNotExistException {
 
         AClass aClass = classRepository.findById(id)
@@ -122,6 +127,7 @@ public class ClassServiceImpl implements ClassService {
     }
 
     @Override
+    @Transactional
     public List<hasPermissionResponse> test() throws ApplicationException, URISyntaxException {
         URI uri = new URI("http://lms-gateway/payment-service/hasPermission") ;
         HttpHeaders headers = new HttpHeaders();

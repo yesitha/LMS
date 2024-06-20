@@ -14,6 +14,8 @@ public interface ClassMapper {
     ClassMapper INSTANCE = Mappers.getMapper(ClassMapper.class);
 
     @Mapping(source = "contentId", target = "id")
+    @Mapping(source = "contentAccessType", target = "contentAccesstype")
+
     ClassResponseDto toDto(AClass aClass);
 
     List<ClassResponseDto> toDtoList(List<AClass> aClassList);

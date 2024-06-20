@@ -33,9 +33,9 @@ public class Lesson extends Content {
     @ManyToOne
     @JoinColumn(name = "class_id")
     private AClass aClass;
-    @OneToMany(mappedBy = "lesson")
+    @OneToMany(mappedBy = "lesson",cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Session> sessionList;
-    @OneToMany(mappedBy = "lesson")
+    @OneToMany(mappedBy = "lesson",cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Quiz> quizList;
     @Column(name = "is_available_for_students")
     private Boolean isAvailableForStudents;
