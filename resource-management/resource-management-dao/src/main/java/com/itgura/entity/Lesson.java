@@ -22,7 +22,7 @@ public class Lesson extends Content {
     private String lessonName;
     @Column(name = "lesson_number")
     private Integer lessonNumber;
-    @Column(name = "lesson_description")
+    @Column(name = "lesson_description",columnDefinition = "TEXT")
     private String lessonDescription;
     @Column(name = "start_date")
     private Date startDate;

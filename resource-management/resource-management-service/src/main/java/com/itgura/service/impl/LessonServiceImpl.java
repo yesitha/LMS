@@ -137,19 +137,23 @@ public class LessonServiceImpl implements LessonService {
     @Override
     @Transactional
     public String deleteLesson(UUID id) throws ApplicationException, CredentialNotFoundException, BadRequestRuntimeException {
-        UserResponseDto loggedUserDetails = userDetailService.getLoggedUserDetails(UserUtil.extractToken());
-        Lesson lesson = lessonRepository.findById(id).orElseThrow(() -> new ValueNotExistException("Lesson not found with id " + id));
-        if(loggedUserDetails.getUserRoles().equals("ADMIN") || loggedUserDetails.getUserRoles().equals("TEACHER")) {
-            try{
-                lessonRepository.deleteById(id);
-                return "Lesson deleted successfully with id " + id  ;
-            } catch (Exception e) {
-                throw new ApplicationException("Error while deleting lesson with id " + id);
+        try {
+            UserResponseDto loggedUserDetails = userDetailService.getLoggedUserDetails(UserUtil.extractToken());
+            Lesson lesson = lessonRepository.findById(id).orElseThrow(() -> new ValueNotExistException("Lesson not found with id " + id));
+            if (loggedUserDetails.getUserRoles().equals("ADMIN") || loggedUserDetails.getUserRoles().equals("TEACHER")) {
+                try {
+                    lessonRepository.deleteById(id);
+                    return "Lesson deleted successfully with id " + id;
+                } catch (Exception e) {
+                    throw new ApplicationException("Error while deleting lesson with id " + id);
+                }
+
+            } else {
+                throw new ForbiddenException("User is not authorized to perform this operation");
+
             }
-
-        } else{
-            throw new ForbiddenException("User is not authorized to perform this operation");
-
+        }catch (Exception e) {
+            throw new RuntimeException(e);
         }
 
 

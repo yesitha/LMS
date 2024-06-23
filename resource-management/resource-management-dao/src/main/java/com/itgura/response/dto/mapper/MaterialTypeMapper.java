@@ -13,7 +13,7 @@ import java.util.List;
 @Mapper
 public interface MaterialTypeMapper {
     MaterialTypeMapper INSTANCE = Mappers.getMapper(MaterialTypeMapper.class);
-
+    @Mapping(source = "materialTypeId", target = "id")
     MaterialTypeResponseDto toDto(MaterialType materialType);
 
     List<MaterialTypeResponseDto> toDtoList(List<MaterialType> materialTypes);

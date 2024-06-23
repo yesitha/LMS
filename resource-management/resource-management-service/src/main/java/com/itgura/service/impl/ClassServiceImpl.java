@@ -40,8 +40,7 @@ public class ClassServiceImpl implements ClassService {
     private ClassRepository classRepository;
     @Autowired
     private UserDetailService userDetailService;
-    @Autowired
-    private RestTemplate restTemplate;
+
 
 
     @Override
@@ -126,45 +125,5 @@ public class ClassServiceImpl implements ClassService {
 
     }
 
-    @Override
-    @Transactional
-    public List<hasPermissionResponse> test() throws ApplicationException, URISyntaxException {
-        URI uri = new URI("http://lms-gateway/payment-service/hasPermission") ;
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Bearer " + UserUtil.extractToken());
-        // Create request body
-
-
-        AppRequest<hasPermissionRequest> requestBody = new AppRequest<>();
-        hasPermissionRequest data = new hasPermissionRequest();
-        data.setContentIds(Collections.singletonList(UUID.randomUUID()));
-        requestBody.setData(data);
-        // Set the fields of the requestBody object as needed
-
-        // Create HttpEntity with body and headers
-        HttpEntity<AppRequest<hasPermissionRequest>> entity = new HttpEntity<>(requestBody, headers);
-
-
-
-
-        try {
-            ResponseEntity<AppResponse> responseEntity = restTemplate.postForEntity(uri, entity, AppResponse.class);
-            AppResponse response = responseEntity.getBody();
-
-            if (response == null || response.getData() == null) {
-                throw new ApplicationException("Error while getting monthly payment: response or data is null");
-            }
-
-            return (List<hasPermissionResponse>) response.getData();
-
-
-        } catch (HttpClientErrorException.Forbidden e) {
-            throw new ApplicationException("Access is forbidden: " + e.getMessage());
-        } catch (HttpClientErrorException e) {
-            throw new ApplicationException("Client error: " + e.getStatusCode() + " " + e.getMessage());
-        } catch (Exception e) {
-            throw new ApplicationException("Server error: " + e.getMessage());
-        }
-    }
 
 }

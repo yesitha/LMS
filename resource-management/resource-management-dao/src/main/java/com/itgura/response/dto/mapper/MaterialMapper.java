@@ -18,7 +18,6 @@ public interface MaterialMapper {
     @Mapping(source = "materialType", target = "materialType")
     @Mapping(source = "createdBy", target = "createdByUserId")
     @Mapping(source = "lastModifiedBy", target = "lastModifiedByUserId")
-    @Mapping(source = "contentAccessType", target = "contentAccesstype")
     MaterialResponseDto toDto(Material material);
 
     List<MaterialResponseDto> toDtoList(List<Material> materials);

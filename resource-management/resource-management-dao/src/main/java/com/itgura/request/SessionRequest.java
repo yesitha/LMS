@@ -18,10 +18,14 @@ public class SessionRequest {
     private Date startDateAndTime;
     @JsonProperty("session_name")
     private String sessionName;
+    @JsonProperty("session_number")
+    private Integer sessionNumber;
     @JsonProperty("description")
     private String description;
     @JsonProperty("topic")
     private String topic;
+    @JsonProperty("is_available_for_student")
+    private Boolean isAvailableForStudent;
     @JsonProperty("content_access_type")
     private ContentAccessType contentAccesstype;
 }

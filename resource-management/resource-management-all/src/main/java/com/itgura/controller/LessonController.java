@@ -55,7 +55,7 @@ public class LessonController {
             return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");
         }
     }
-    @GetMapping(ResourceManagementURI.LESSON + URIPrefix.GET_ALL+ URIPrefix.CLASSID)
+    @GetMapping(ResourceManagementURI.LESSON + URIPrefix.GET_ALL+ URIPrefix.CLASS_ID)
     public AppResponse<List<LessonResponseDto>> getAllLessons(@PathVariable UUID classId) {
         try {
             List<LessonResponseDto> response = this.lessonService.findAllLesson(classId);

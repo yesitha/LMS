@@ -1,5 +1,6 @@
 package com.itgura.controller;
 
+import com.itgura.dto.AppRequest;
 import com.itgura.dto.AppResponse;
 import com.itgura.request.ClassRequest;
 import com.itgura.response.dto.ClassResponseDto;
@@ -34,10 +35,11 @@ public class ClassController {
     }
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PostMapping(ResourceManagementURI.CLASS + ResourceManagementURI.CREATE)
-    public AppResponse<String> createClass(@RequestBody ClassRequest request) {
+    public AppResponse<String> createClass(@RequestBody AppRequest<ClassRequest> request) {
 
         try {
-            String response = this.classService.create(request);
+
+            String response = this.classService.create(request.getData());
             return AppResponse.ok(response);
         } catch (Exception e) {
             return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");
@@ -66,24 +68,14 @@ public class ClassController {
         }
     }
     @PatchMapping(ResourceManagementURI.CLASS + URIPrefix.UPDATE + URIPrefix.ID)
-    public AppResponse<String> updateClass(@PathVariable("id") UUID id, @RequestBody ClassRequest request) {
+    public AppResponse<String> updateClass(@PathVariable("id") UUID id, @RequestBody AppRequest<ClassRequest> request) {
         try {
-            String update = this.classService.update(id, request);
+            String update = this.classService.update(id, request.getData());
             return AppResponse.ok(update);
         } catch (Exception e) {
             return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");
         }
     }
 
-    @GetMapping(ResourceManagementURI.CLASS + ResourceManagementURI.test)
-    public AppResponse<List<hasPermissionResponse>> test() {
 
-        try {
-            List<hasPermissionResponse> response = this.classService.test();
-            return AppResponse.ok(response);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");
-        }
-    }
 }

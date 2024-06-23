@@ -23,7 +23,7 @@ public class Session extends Content {
     private String sessionName;
     @Column(name = "topic")
     private String  topic;
-    @Column(name = "short_description")
+    @Column(name = "short_description",columnDefinition = "TEXT")
     private String  shortDescription;
     @Column(name = "date_and_time")
     private Date dateAndTime;

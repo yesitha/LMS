@@ -19,7 +19,7 @@ public interface ClassService {
 
     Double getClassFee(UUID id) throws ValueNotExistException;
 
-    List<hasPermissionResponse> test() throws ApplicationException, URISyntaxException;
+
 
 
 }
