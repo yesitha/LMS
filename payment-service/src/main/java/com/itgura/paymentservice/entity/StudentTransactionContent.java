@@ -21,7 +21,9 @@ public class StudentTransactionContent {
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "student_transaction_content_id")
     private UUID studentTransactionContentId;
+    @Column(name = "student_email")
     private String studentEmail;
+    @Column(name = "content_id")
     private UUID contentId;
     @ManyToOne
     @JoinColumn(name = "transaction_id",nullable=false)

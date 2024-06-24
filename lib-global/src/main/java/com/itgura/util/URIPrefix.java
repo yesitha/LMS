@@ -16,5 +16,11 @@ public class URIPrefix {
     public static final String UPDATE = "/update";
     public static final String DELETE = "/delete";
     public static final String GET = "/get";
+    public static final String ID = "/{id}";
+    public static final String CLASS_ID = "/{classId}";
+    public static final String YEAR = "/{year}";
+    public static final String MONTH = "/{month}";
+    public static final String LESSON_ID = "/{lessonId}";
+    public static final String SESSION_ID = "/{sessionId}";
     public static final String GET_ALL = "/get-all";
 }

@@ -1,5 +1,6 @@
 package com.itgura.controller;
 
+import com.itgura.dto.AppRequest;
 import com.itgura.dto.AppResponse;
 import com.itgura.request.ClassRequest;
 import com.itgura.response.dto.ClassResponseDto;
@@ -34,10 +35,11 @@ public class ClassController {
     }
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PostMapping(ResourceManagementURI.CLASS + ResourceManagementURI.CREATE)
-    public AppResponse<String> createClass(@RequestBody ClassRequest request) {
+    public AppResponse<String> createClass(@RequestBody AppRequest<ClassRequest> request) {
 
         try {
-            String response = this.classService.create(request);
+
+            String response = this.classService.create(request.getData());
             return AppResponse.ok(response);
         } catch (Exception e) {
             return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");
@@ -52,18 +54,29 @@ public class ClassController {
             Double response = this.classService.getClassFee(id);
             return AppResponse.ok(response);
         } catch (Exception e) {
+            e.printStackTrace();
             return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");
         }
     }
-
-    @GetMapping(ResourceManagementURI.CLASS + ResourceManagementURI.test)
-    public AppResponse<List<hasPermissionResponse>> test() {
-
+    @GetMapping(ResourceManagementURI.CLASS +URIPrefix.BY_ID)
+    public AppResponse<ClassResponseDto> getClass(@PathVariable UUID id) {
         try {
-            List<hasPermissionResponse> response = this.classService.test();
-            return AppResponse.ok(response);
+            ClassResponseDto classById = this.classService.getClassById(id);
+            return AppResponse.ok(classById);
         } catch (Exception e) {
             return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");
         }
     }
+    
+    @PatchMapping(ResourceManagementURI.CLASS + URIPrefix.UPDATE + URIPrefix.ID)
+    public AppResponse<String> updateClass(@PathVariable("id") UUID id, @RequestBody AppRequest<ClassRequest> request) {
+        try {
+            String update = this.classService.update(id, request.getData());
+            return AppResponse.ok(update);
+        } catch (Exception e) {
+            return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");
+        }
+    }
+
+
 }

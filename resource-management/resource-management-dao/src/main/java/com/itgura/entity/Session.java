@@ -23,21 +23,20 @@ public class Session extends Content {
     private String sessionName;
     @Column(name = "topic")
     private String  topic;
-    @Column(name = "short_description")
+    @Column(name = "short_description",columnDefinition = "TEXT")
     private String  shortDescription;
     @Column(name = "date_and_time")
     private Date dateAndTime;
-    @OneToMany(mappedBy = "session")
-    private List<Recording> classStudentList;
-    @OneToMany(mappedBy = "session")
-    private List<Material> lessonList;
+    @Column(name = "session_number")
+    private Integer sessionNumber;
+    @OneToMany(mappedBy = "session",cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private List<Material> materialList;
     @ManyToOne
     @JoinColumn(name = "lesson_id")
     private Lesson lesson;
-    @OneToMany(mappedBy = "session")
+    @OneToMany(mappedBy = "session",cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<ScheduleSession> scheduleSessionList;
-    @OneToMany(mappedBy = "session")
-    private List<StudentTransactionContent> studentTransactionContentList;
+
     @Column(name = "is_available_for_students")
     private Boolean isAvailableForStudents;
 

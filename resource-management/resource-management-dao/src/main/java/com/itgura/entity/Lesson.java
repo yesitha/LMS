@@ -22,7 +22,7 @@ public class Lesson extends Content {
     private String lessonName;
     @Column(name = "lesson_number")
     private Integer lessonNumber;
-    @Column(name = "lesson_description")
+    @Column(name = "lesson_description",columnDefinition = "TEXT")
     private String lessonDescription;
     @Column(name = "start_date")
     private Date startDate;
@@ -33,9 +33,9 @@ public class Lesson extends Content {
     @ManyToOne
     @JoinColumn(name = "class_id")
     private AClass aClass;
-    @OneToMany(mappedBy = "lesson")
+    @OneToMany(mappedBy = "lesson",cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Session> sessionList;
-    @OneToMany(mappedBy = "lesson")
+    @OneToMany(mappedBy = "lesson",cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Quiz> quizList;
     @Column(name = "is_available_for_students")
     private Boolean isAvailableForStudents;

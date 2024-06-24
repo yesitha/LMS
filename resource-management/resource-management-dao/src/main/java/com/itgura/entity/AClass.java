@@ -21,16 +21,15 @@ public class AClass extends Content  {
     private String className;
     @Column(name = "year")
     private Integer year;
-    @ManyToOne
-    @JoinColumn(name = "fees_id")
-    private Fees fees;
-    @OneToMany(mappedBy = "aClass")
+    @Column(name = "fees")
+    private Double fees;
+    @OneToMany(mappedBy = "aClass",cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<ClassStudent> classStudentList;
-    @OneToMany(mappedBy = "aClass")
+    @OneToMany(mappedBy = "aClass",cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Lesson> lessonList;
-    @OneToMany(mappedBy = "aClass")
-    private List<Schedule> scheduleList;
-    @OneToMany(mappedBy = "aClass")
+    @OneToOne(mappedBy = "aClass", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private Schedule schedule; // Unique relationship with Schedule
+    @OneToMany(mappedBy = "aClass",cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Announcement> announcementList;
 
 

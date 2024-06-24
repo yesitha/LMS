@@ -23,7 +23,7 @@ public class Stream {
     private UUID streamId;
     @Column(name = "stream")
     private String stream;
-    @OneToMany(mappedBy = "stream")
+    @OneToMany(mappedBy = "stream",cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Student> studentList;
 
 }

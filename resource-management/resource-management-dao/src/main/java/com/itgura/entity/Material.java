@@ -21,10 +21,15 @@ public class Material extends Content  {
     private String materialName;
     @Column(name = "reference")
     private String reference;
-    @Column(name = "description")
+    @Column(name = "description",columnDefinition = "TEXT")
     private String description;
+    @ManyToOne
+    @JoinColumn(name = "material_type_id")
+    private MaterialType materialType;
     @ManyToOne
     @JoinColumn(name = "session_id")
     private Session session;
+    @Column(name = "is_available_for_students")
+    private Boolean isAvailableForStudents;
 
 }
