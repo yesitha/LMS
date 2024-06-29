@@ -4,6 +4,7 @@ import com.itgura.dto.AppRequest;
 import com.itgura.dto.AppResponse;
 import com.itgura.exception.BadRequestRuntimeException;
 import com.itgura.exception.ValueNotExistException;
+import com.itgura.paymentservice.dto.request.addSessionToMonthRequest;
 import com.itgura.paymentservice.dto.request.getPaidMothRequest;
 import com.itgura.paymentservice.dto.request.saveMonthlyPaymentRequest;
 import com.itgura.paymentservice.dto.response.PaymentDTO;
@@ -18,6 +19,7 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/payment-service")
@@ -91,6 +93,30 @@ public class PaymentController {
             return AppResponse.ok(res);
         } catch (BadRequestRuntimeException e) {
             return AppResponse.error(null, e.getMessage(), "Bad Request", "400", "");
+        } catch (Exception e) {
+            return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");
+        }
+
+    }
+
+    @PostMapping("/addSessionToMonth")
+    public AppResponse<String> addSessionToMonth(@Valid @RequestBody AppRequest<addSessionToMonthRequest> request) {
+
+        try {
+            String s = paymentService.addSessionToMonth(request.getData());
+            return AppResponse.ok(s);
+        } catch (Exception e) {
+            return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");
+        }
+
+    }
+
+    @PostMapping("/deleteSession")
+    public AppResponse<String> deleteSession(@Valid @RequestBody AppRequest<UUID> request) {
+
+        try {
+            String s = paymentService.deleteSession(request.getData());
+            return AppResponse.ok(s);
         } catch (Exception e) {
             return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");
         }
