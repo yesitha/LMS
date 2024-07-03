@@ -15,4 +15,5 @@ import java.util.UUID;
 public class UserResponseDto {
     private UUID userId;
     private String userRoles;
+    private String name;
 }

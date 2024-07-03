@@ -13,5 +13,8 @@ public class ResourceManagementURI {
     public static final String MATERIAL = "/material-type";
     public static final String SESSION_ID = "/{sessionId}";
     public static final String MATERIAL_ID = "/{materialId}";
+    public static final String CLASS_ID = "/{classId}";
+    public static final String ANNOUNCEMENT = "/announcement";
+    public static final String ANNOUNCEMENT_ID = "/{announcementId}";
 
 }
