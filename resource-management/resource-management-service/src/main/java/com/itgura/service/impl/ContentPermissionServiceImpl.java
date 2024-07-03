@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itgura.dto.AppRequest;
 import com.itgura.dto.AppResponse;
 import com.itgura.exception.ApplicationException;
+import com.itgura.request.addSessionToMonthRequest;
 import com.itgura.request.hasPermissionRequest;
 import com.itgura.response.hasPermissionResponse;
 import com.itgura.service.ContentPermissionService;
@@ -97,6 +98,70 @@ public class ContentPermissionServiceImpl implements ContentPermissionService {
         } catch (Exception e) {
             throw new ApplicationException("Server error: " + e.getMessage());
         }
+    }
+
+    @Override
+    @Transactional
+    public String givePermissionForStudents(UUID classId, int year, int month, UUID contentId) throws ApplicationException, URISyntaxException {
+        URI uri = new URI("http://lms-gateway/payment-service/addSessionToMonth");
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + UserUtil.extractToken());
+
+        // Create request body
+        AppRequest<addSessionToMonthRequest> requestBody = new AppRequest<>();
+        hasPermissionRequest data = new hasPermissionRequest();
+        addSessionToMonthRequest addSessionToMonthRequest = new addSessionToMonthRequest();
+        addSessionToMonthRequest.setClassId(classId);
+        addSessionToMonthRequest.setYear(year);
+        addSessionToMonthRequest.setMonth(month);
+        addSessionToMonthRequest.setSessionId(contentId);
+        requestBody.setData(addSessionToMonthRequest);
+
+        // Create HttpEntity with body and headers
+        HttpEntity<AppRequest<addSessionToMonthRequest>> entity = new HttpEntity<>(requestBody, headers);
+        try{
+            ResponseEntity<AppResponse> responseEntity = restTemplate.postForEntity(uri, entity, AppResponse.class);
+            AppResponse response = responseEntity.getBody();
+
+            if (response == null || response.getData() == null) {
+                throw new ApplicationException("Error while getting permissions: response or data is null");
+            }
+            return (String) response.getData();
+        }catch (HttpClientErrorException.Forbidden e) {
+            throw new ApplicationException("Access is forbidden: " + e.getMessage());
+        } catch (HttpClientErrorException e) {
+            throw new ApplicationException("Client error: " + e.getStatusCode() + " " + e.getMessage());
+        } catch (Exception e) {
+            throw new ApplicationException("Server error: " + e.getMessage());
+        }
+    }
+
+    @Override
+    @Transactional
+    public String deleteSession(UUID contentId) throws ApplicationException, URISyntaxException {
+        URI uri = new URI("http://lms-gateway/payment-service/deleteSession");
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + UserUtil.extractToken());
+        AppRequest<UUID> requestBody = new AppRequest<>();
+
+        requestBody.setData(contentId);
+        HttpEntity<AppRequest<UUID>> entity = new HttpEntity<>(requestBody, headers);
+        try{
+            ResponseEntity<AppResponse> responseEntity = restTemplate.postForEntity(uri, entity, AppResponse.class);
+            AppResponse response = responseEntity.getBody();
+
+            if (response == null || response.getData() == null) {
+                throw new ApplicationException("Error while getting permissions: response or data is null");
+            }
+            return (String) response.getData();
+        }catch (HttpClientErrorException.Forbidden e) {
+            throw new ApplicationException("Access is forbidden: " + e.getMessage());
+        } catch (HttpClientErrorException e) {
+            throw new ApplicationException("Client error: " + e.getStatusCode() + " " + e.getMessage());
+        } catch (Exception e) {
+            throw new ApplicationException("Server error: " + e.getMessage());
+        }
+
     }
 }
 

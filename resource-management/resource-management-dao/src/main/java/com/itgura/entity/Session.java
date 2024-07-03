@@ -22,19 +22,22 @@ public class Session extends Content {
     @Column(name = "session_name")
     private String sessionName;
     @Column(name = "topic")
-    private String  topic;
-    @Column(name = "short_description",columnDefinition = "TEXT")
-    private String  shortDescription;
+    private String topic;
+    @Column(name = "short_description", columnDefinition = "TEXT")
+    private String shortDescription;
     @Column(name = "date_and_time")
     private Date dateAndTime;
     @Column(name = "session_number")
     private Integer sessionNumber;
-    @OneToMany(mappedBy = "session",cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+
+    @OneToMany(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Material> materialList;
+
     @ManyToOne
     @JoinColumn(name = "lesson_id")
     private Lesson lesson;
-    @OneToMany(mappedBy = "session",cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+
+    @OneToMany(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ScheduleSession> scheduleSessionList;
 
     @Column(name = "is_available_for_students")
