@@ -3,6 +3,7 @@ import com.itgura.exception.ApplicationException;
 import com.itgura.exception.BadRequestRuntimeException;
 import com.itgura.paymentservice.dto.request.addSessionToMonthRequest;
 import com.itgura.paymentservice.dto.request.getPaidMothRequest;
+import com.itgura.paymentservice.dto.request.saveContentPaymentRequest;
 import com.itgura.paymentservice.dto.request.saveMonthlyPaymentRequest;
 
 import java.util.UUID;
@@ -15,4 +16,6 @@ public interface PaymentService {
     String addSessionToMonth(addSessionToMonthRequest data);
 
     String deleteSession(UUID data);
+
+    String saveContentPayment(saveContentPaymentRequest data) throws BadRequestRuntimeException, ApplicationException;
 }

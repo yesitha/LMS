@@ -6,6 +6,7 @@ import com.itgura.exception.BadRequestRuntimeException;
 import com.itgura.exception.ValueNotExistException;
 import com.itgura.paymentservice.dto.request.addSessionToMonthRequest;
 import com.itgura.paymentservice.dto.request.getPaidMothRequest;
+import com.itgura.paymentservice.dto.request.saveContentPaymentRequest;
 import com.itgura.paymentservice.dto.request.saveMonthlyPaymentRequest;
 import com.itgura.paymentservice.dto.response.PaymentDTO;
 import com.itgura.paymentservice.service.PaymentService;
@@ -116,6 +117,18 @@ public class PaymentController {
 
         try {
             String s = paymentService.deleteSession(request.getData());
+            return AppResponse.ok(s);
+        } catch (Exception e) {
+            return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");
+        }
+
+    }
+
+    @PostMapping("/saveContentPayment")
+    public AppResponse<String> saveContentPayment(@Valid @RequestBody AppRequest<saveContentPaymentRequest> request) {
+
+        try {
+            String s = paymentService.saveContentPayment(request.getData());
             return AppResponse.ok(s);
         } catch (Exception e) {
             return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");

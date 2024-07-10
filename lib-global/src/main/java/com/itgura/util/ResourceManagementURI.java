@@ -17,4 +17,6 @@ public class ResourceManagementURI {
     public static final String ANNOUNCEMENT = "/announcement";
     public static final String ANNOUNCEMENT_ID = "/{announcementId}";
 
+    public static final String CONTENT = "/content";
+    public static final String TAGS = "/tags";
 }

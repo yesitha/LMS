@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Repository
@@ -21,4 +23,7 @@ public interface StudentTransactionContentRepository extends JpaRepository<Stude
     @Modifying
     @Query("DELETE FROM StudentTransactionContent stc WHERE stc.contentId = :data")
     void deleteByContentId(UUID data);
+
+    @Query("SELECT stc FROM StudentTransactionContent stc WHERE stc.contentExpireDate < :currentDate")
+    List<StudentTransactionContent> findByContentExpireDateBefore(Date currentDate);
 }

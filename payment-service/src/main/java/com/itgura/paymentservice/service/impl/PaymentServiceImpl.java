@@ -5,6 +5,7 @@ import com.itgura.exception.ApplicationException;
 import com.itgura.exception.BadRequestRuntimeException;
 import com.itgura.paymentservice.dto.request.addSessionToMonthRequest;
 import com.itgura.paymentservice.dto.request.getPaidMothRequest;
+import com.itgura.paymentservice.dto.request.saveContentPaymentRequest;
 import com.itgura.paymentservice.dto.request.saveMonthlyPaymentRequest;
 import com.itgura.paymentservice.entity.StudentTransactionContent;
 import com.itgura.paymentservice.entity.Transaction;
@@ -14,17 +15,20 @@ import com.itgura.paymentservice.service.PaymentService;
 import com.itgura.util.UserUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDate;
 import java.time.Year;
+import java.time.ZoneId;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -51,6 +55,7 @@ public class PaymentServiceImpl implements PaymentService {
         for (int month : months) {
             Transaction transaction = new Transaction();
             transaction.setStudentEmail(data.getStudentEmail());
+            transaction.setOrderId(data.getOrderId());
             transaction.setNote(data.getNote());
             transaction.setPaymentYearFor(Calendar.getInstance().get(Calendar.YEAR));
             transaction.setPaymentMonthFor(month);
@@ -138,6 +143,82 @@ public class PaymentServiceImpl implements PaymentService {
         return "Session deleted successfully";
     }
 
+    @Override
+    public String saveContentPayment(saveContentPaymentRequest data) throws BadRequestRuntimeException, ApplicationException {
+        Transaction transaction = new Transaction();
+        transaction.setOrderId(data.getOrderId());
+        transaction.setStudentEmail(data.getStudentEmail());
+        transaction.setNote(data.getNote());
+        transaction.setAmount(data.getPaymentAmount());
+        transactionRepository.save(transaction);
+        if (data.getPaymentAmount() == getContentPrice(data.getContentId())) {
+            StudentTransactionContent studentTransactionContent = new StudentTransactionContent();
+            studentTransactionContent.setStudentEmail(data.getStudentEmail());
+            studentTransactionContent.setContentId(data.getContentId());
+            studentTransactionContent.setTransaction(transaction);
+            Integer accessTimeDurationInDays = getAccessTimeDuration(data.getContentId());
+            if(accessTimeDurationInDays != null && accessTimeDurationInDays > 0) {
+                LocalDate expireDate = LocalDate.now();
+                expireDate = expireDate.plusDays(accessTimeDurationInDays);
+                studentTransactionContent.setContentExpireDate(Date.from(expireDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()));
+            }
+            studentTransactionContentRepository.save(studentTransactionContent);
+            return "Content payment saved successfully";
+        }else{
+            throw new BadRequestRuntimeException("Payment amount is not correct");
+        }
+
+    }
+
+    private Integer getAccessTimeDuration(UUID contentId) throws ApplicationException {
+        String url = "http://lms-gateway/resource-management/content//get-access-time-duration/" + contentId;
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + UserUtil.extractToken());
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        try {
+            ResponseEntity<AppResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, AppResponse.class);
+            AppResponse response = responseEntity.getBody();
+
+            if (response == null || response.getData() == null) {
+                throw new ApplicationException("Error while getting content price: response or data is null");
+            }
+
+            return (Integer) response.getData();
+
+        } catch (HttpClientErrorException.Forbidden e) {
+            throw new ApplicationException("Access is forbidden: " + e.getMessage());
+        } catch (HttpClientErrorException e) {
+            throw new ApplicationException("Client error: " + e.getStatusCode() + " " + e.getMessage());
+        } catch (Exception e) {
+            throw new ApplicationException("Server error: " + e.getMessage());
+        }
+    }
+
+    private double getContentPrice(UUID contentId) throws ApplicationException {
+        String url = "http://lms-gateway/resource-management/content/get-price/" + contentId;
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + UserUtil.extractToken());
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        try {
+            ResponseEntity<AppResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, AppResponse.class);
+            AppResponse response = responseEntity.getBody();
+
+            if (response == null || response.getData() == null) {
+                throw new ApplicationException("Error while getting content price: response or data is null");
+            }
+
+            return (double) response.getData();
+
+        } catch (HttpClientErrorException.Forbidden e) {
+            throw new ApplicationException("Access is forbidden: " + e.getMessage());
+        } catch (HttpClientErrorException e) {
+            throw new ApplicationException("Client error: " + e.getStatusCode() + " " + e.getMessage());
+        } catch (Exception e) {
+            throw new ApplicationException("Server error: " + e.getMessage());
+        }
+    }
+
     private double getMonthlyPayment(UUID classId) throws ApplicationException {
 
         String url = "http://lms-gateway/resource-management/class/getClassFee/" + classId;
@@ -165,6 +246,21 @@ public class PaymentServiceImpl implements PaymentService {
             throw new ApplicationException("Server error: " + e.getMessage());
         }
     }
+
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void deleteExpiredStudentTransactionContents() {
+        Date currentDate = new Date();
+        List<StudentTransactionContent> expiredContents = studentTransactionContentRepository.findByContentExpireDateBefore(currentDate);
+        if (!expiredContents.isEmpty()) {
+            studentTransactionContentRepository.deleteAll(expiredContents);
+            System.out.println("Deleted expired contents: " + expiredContents.size());
+        } else {
+            System.out.println("No expired contents found.");
+        }
+    }
+
+
+
 
 
 }

@@ -1,6 +1,7 @@
 package com.itgura.entity;
 
 import com.itgura.enums.ContentAccessType;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -35,6 +36,11 @@ public class Content {
     private java.util.Date lastModifiedOn;
     @Column(name = "price")
     private Double price;
+    @Nullable
+    @Column(name = "content_access_time_duration")
+    private Integer contentAccessTimeDuration;
+    @OneToMany(mappedBy = "tag",cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private List<ContentTag> contentTagList;
     @Enumerated(EnumType.STRING)
     private ContentAccessType contentAccessType;
 
