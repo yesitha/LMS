@@ -39,7 +39,7 @@ public class Content {
     @Nullable
     @Column(name = "content_access_time_duration")
     private Integer contentAccessTimeDuration;
-    @OneToMany(mappedBy = "tag",cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(mappedBy = "content",cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<ContentTag> contentTagList;
     @Enumerated(EnumType.STRING)
     private ContentAccessType contentAccessType;

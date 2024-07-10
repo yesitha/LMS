@@ -11,10 +11,10 @@ import java.util.UUID;
 @EnableJpaRepositories
 @Repository
 public interface TagRepository extends JpaRepository<Tag, UUID> {
-    @Query(value = "SELECT EXISTS(SELECT 1 FROM tag WHERE tagName = :tag)", nativeQuery = true)
+    @Query(value = "SELECT EXISTS(SELECT 1 FROM tag WHERE tag_name = :tag)", nativeQuery = true)
     boolean existByName(String tag);
 
 
-    @Query(value = "SELECT * FROM tag WHERE tagName = :tag", nativeQuery = true)
+    @Query(value = "SELECT * FROM tag WHERE tag_name = :tag", nativeQuery = true)
     Tag findByTagName(String tag);
 }

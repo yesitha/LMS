@@ -27,14 +27,10 @@ public class ContentServiceImpl implements ContentService {
     @Autowired
     private ContentTagRepository contentTagRepository;
 
-    @Autowired
 
 
-    @Override
-    public Content getContentById(UUID id) {
-        return this.contentRepository.findById(id).orElse(null);
 
-    }
+
 
     @Override
     public String updateTags(UUID contentId, List<String> tags) {

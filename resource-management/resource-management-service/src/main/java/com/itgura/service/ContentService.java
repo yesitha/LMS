@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ContentService {
-    Content getContentById(UUID id);
+
 
     String updateTags(UUID contentId, List<String> tags);
 
