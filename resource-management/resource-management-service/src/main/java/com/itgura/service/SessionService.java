@@ -18,5 +18,6 @@ public interface SessionService {
     List<SessionResponseDto> findAllSession( UUID lessonId) throws CredentialNotFoundException, BadRequestRuntimeException, ApplicationException, URISyntaxException;
     List<UUID> findAllSessionsInMonth(UUID classId, int month, int year) throws CredentialNotFoundException, BadRequestRuntimeException, ValueNotExistException;
     String updateSession(UUID sessionId, SessionRequest request) throws ApplicationException, CredentialNotFoundException, BadRequestRuntimeException, URISyntaxException;
+    String deleteSession(UUID sessionId) throws ApplicationException, CredentialNotFoundException, BadRequestRuntimeException, URISyntaxException;
 
 }

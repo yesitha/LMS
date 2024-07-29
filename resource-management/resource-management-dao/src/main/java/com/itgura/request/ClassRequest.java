@@ -21,4 +21,5 @@ public class ClassRequest {
     @JsonProperty("content_access_type")
     private ContentAccessType contentAccesstype;
 
+
 }

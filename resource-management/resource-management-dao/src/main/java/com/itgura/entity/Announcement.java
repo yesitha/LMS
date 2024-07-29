@@ -30,6 +30,7 @@ public class Announcement {
     @Column(name = "announcement_by")
     @Lob
     private UUID announcementBy;
+
     @ManyToOne
     @JoinColumn(name = "class_id")
     private AClass aClass;

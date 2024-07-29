@@ -81,8 +81,18 @@ public class SessionServiceImpl implements SessionService {
                 session.setContentAccessType(request.getContentAccesstype());
                 Session save = sessionRepository.save(session);
                 addSessionToSchedule(save.getLesson().getAClass().getContentId(),save,true);
-                if(session.getIsAvailableForStudents()) {
-//                givePermissionToStudents();
+                if (session.getIsAvailableForStudents()) {
+                    Date dateAndTime = session.getDateAndTime();
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(dateAndTime);
+
+                    // Get the year and month
+                    int year = calendar.get(Calendar.YEAR);
+                    int month = calendar.get(Calendar.MONTH) + 1;
+
+                    contentPermissionService.givePermissionForStudents(
+                            lesson.getAClass().getContentId(), year, month, save.getContentId()
+                    );
                 }
                 return "Session saved successfully";
 
@@ -266,7 +276,17 @@ public class SessionServiceImpl implements SessionService {
                 Session save = sessionRepository.save(session);
                 addSessionToSchedule(save.getLesson().getAClass().getContentId(), save, false);
                 if (session.getIsAvailableForStudents()) {
-//                givePermissionToStudents();
+                    Date dateAndTime = session.getDateAndTime();
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(dateAndTime);
+
+                    // Get the year and month
+                    int year = calendar.get(Calendar.YEAR);
+                    int month = calendar.get(Calendar.MONTH) + 1;
+
+                    contentPermissionService.givePermissionForStudents(
+                            session.getLesson().getAClass().getContentId(), year, month, save.getContentId()
+                    );
                 }
                 return "Session updated successfully";
 
@@ -275,6 +295,24 @@ public class SessionServiceImpl implements SessionService {
             }
         }catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public String deleteSession(UUID sessionId) throws ApplicationException, CredentialNotFoundException, BadRequestRuntimeException, URISyntaxException {
+        UserResponseDto loggedUserDetails = userDetailService.getLoggedUserDetails(UserUtil.extractToken());
+        if (loggedUserDetails == null) {
+            throw new ValueNotExistException("User not found");
+        }
+        if (loggedUserDetails.getUserRoles().equals("ADMIN") || loggedUserDetails.getUserRoles().equals("TEACHER")) {
+            Session session = sessionRepository.findById(sessionId).orElseThrow(() -> new ValueNotExistException("Session not found with id " + sessionId));
+            if(session.getIsAvailableForStudents()){
+                contentPermissionService.deleteSession(session.getContentId());
+            }
+            sessionRepository.delete(session);
+            return "Session deleted successfully";
+        } else {
+            throw new ForbiddenException("User is not authorized to perform this operation");
         }
     }
 
@@ -323,9 +361,5 @@ public class SessionServiceImpl implements SessionService {
 
     }
 
-    private void givePermissionToStudents() {
-
-
-    }
 
 }

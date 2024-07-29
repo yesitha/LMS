@@ -17,7 +17,7 @@ public class UserDaoImpl implements UserDao {
     public UserResponseDto getUserDetailByEmail(String email) throws CredentialNotFoundException {
         try{
             StringBuilder sql = new StringBuilder();
-            sql.append("select u.id, u.role from auth_service._user as u where u.email like :email");
+            sql.append("select u.id, u.role, concat(u.first_name,' ',u.last_name) as username from auth_service._user as u where u.email like :email");
             java.util.List<Object[]> resultList ;
 
             Query nativeQuery = entityManager.createNativeQuery(sql.toString());
@@ -26,6 +26,7 @@ public class UserDaoImpl implements UserDao {
             UserResponseDto response = new UserResponseDto();
             response.setUserId((UUID) resultList.get(0)[0]);
             response.setUserRoles((String) resultList.get(0)[1]);
+            response.setName((String) resultList.get(0)[2]);
             return response;
 
         } catch (Exception e) {

@@ -23,4 +23,8 @@ public class URIPrefix {
     public static final String LESSON_ID = "/{lessonId}";
     public static final String SESSION_ID = "/{sessionId}";
     public static final String GET_ALL = "/get-all";
+    public static final String UPDATE_ACCESS_TIME_DURATION = "/update-access-time-duration";
+    public static final String GET_ACCESS_TIME_DURATION = "/get-access-time-duration";
+    public static final String GET_PRICE = "/get-price";
+    public static final String UPDATE_TAGS = "/update-tags";
 }

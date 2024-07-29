@@ -3,9 +3,13 @@ package com.itgura.service.impl;
 import com.itgura.dto.AppRequest;
 import com.itgura.dto.AppResponse;
 import com.itgura.entity.AClass;
+import com.itgura.entity.ContentTag;
+import com.itgura.entity.Tag;
 import com.itgura.exception.ApplicationException;
 import com.itgura.exception.ValueNotExistException;
 import com.itgura.repository.ClassRepository;
+import com.itgura.repository.ContentTagRepository;
+import com.itgura.repository.TagRepository;
 import com.itgura.request.ClassRequest;
 import com.itgura.request.dto.UserResponseDto;
 import com.itgura.request.hasPermissionRequest;
@@ -42,6 +46,12 @@ public class ClassServiceImpl implements ClassService {
     private UserDetailService userDetailService;
     @Autowired
     private RestTemplate restTemplate;
+
+    @Autowired
+    private TagRepository tagRepository;
+
+    @Autowired
+    private ContentTagRepository contentTagRepository;
 
 
 
@@ -82,6 +92,8 @@ public class ClassServiceImpl implements ClassService {
             aClass.setLastModifiedBy(userId);
             aClass.setContentAccessType(request.getContentAccesstype());
             classRepository.save(aClass);
+
+
             return "Class saved successfully";
         } catch (Exception e) {
             throw new RuntimeException(e);
