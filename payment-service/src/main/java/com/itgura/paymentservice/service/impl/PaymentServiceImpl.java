@@ -150,6 +150,8 @@ public class PaymentServiceImpl implements PaymentService {
             ResponseEntity<AppResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, AppResponse.class);
             AppResponse response = responseEntity.getBody();
 
+            System.out.println("Monthly Payment Received : "+response);
+
             if (response == null || response.getData() == null) {
                 throw new ApplicationException("Error while getting monthly payment: response or data is null");
             }

@@ -3,7 +3,6 @@ package com.itgura.service.impl;
 import com.itgura.dto.AppRequest;
 import com.itgura.dto.AppResponse;
 import com.itgura.entity.AClass;
-import com.itgura.entity.Fees;
 import com.itgura.exception.ApplicationException;
 import com.itgura.exception.ValueNotExistException;
 import com.itgura.repository.ClassRepository;

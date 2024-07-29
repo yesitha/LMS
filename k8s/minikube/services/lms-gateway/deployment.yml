@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lms-gateway
+  labels:
+    app: lms-gateway
+  namespace: itgura
+  annotations:
+    linkerd.io/inject: enabled
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lms-gateway
+  template:
+    metadata:
+      name: lms-gateway
+      labels:
+        app: lms-gateway
+    spec:
+      containers:
+        - name: lms-gateway
+          image: yesitha/lms-gateway:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8081
+              protocol: TCP
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: kube
+      restartPolicy: Always

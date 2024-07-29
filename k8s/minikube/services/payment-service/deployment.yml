@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-service
+  labels:
+    app: payment-service
+  namespace: itgura
+  annotations:
+    linkerd.io/inject: enabled
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payment-service
+  template:
+    metadata:
+      name: payment-service
+      labels:
+        app: payment-service
+    spec:
+      containers:
+        - name: payment-service
+          image: yesitha/payment-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8199
+              protocol: TCP
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: kube
+      restartPolicy: Always
