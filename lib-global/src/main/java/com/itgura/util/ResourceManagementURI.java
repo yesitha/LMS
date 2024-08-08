@@ -19,4 +19,7 @@ public class ResourceManagementURI {
 
     public static final String CONTENT = "/content";
     public static final String TAGS = "/tags";
+    public static final String QUIZZES = "/quizzes";
+    public static final String FORUM = "/forum";
+    public static final String MY = "/my";
 }
