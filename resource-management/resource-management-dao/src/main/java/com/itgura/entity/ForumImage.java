@@ -26,4 +26,7 @@ public class ForumImage {
     @ManyToOne
     @JoinColumn(name = "forum_question_id")
     private ForumQuestion forumQuestion;
+    @ManyToOne
+    @JoinColumn(name = "forum_question_reply_id")
+    private ForumQuestionReply forumQuestionReply;
 }

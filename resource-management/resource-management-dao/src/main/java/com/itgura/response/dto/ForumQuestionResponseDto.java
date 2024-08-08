@@ -18,9 +18,6 @@ public class ForumQuestionResponseDto {
     private UUID id;
     @JsonProperty("question")
     private String question;
-
-
-
     @JsonProperty("forum_image_list")
     private List<ForumImageResponseDto> forumImageList;
 

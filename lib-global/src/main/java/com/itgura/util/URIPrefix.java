@@ -22,6 +22,10 @@ public class URIPrefix {
     public static final String MONTH = "/{month}";
     public static final String LESSON_ID = "/{lessonId}";
     public static final String SESSION_ID = "/{sessionId}";
+    public static final String REPLY_ID = "/{replyId}";
+    public static final String QUESTION_ID = "/{questionId}";
+    public static final String IS_REPLY_FOR_QUESTION = "/{isReplyForQuestion}";
+    public static final String CONTENT_ID = "/{contentId}";
     public static final String GET_ALL = "/get-all";
     public static final String UPDATE_ACCESS_TIME_DURATION = "/update-access-time-duration";
     public static final String GET_ACCESS_TIME_DURATION = "/get-access-time-duration";

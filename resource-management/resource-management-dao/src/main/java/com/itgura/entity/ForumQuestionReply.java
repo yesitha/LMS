@@ -28,7 +28,10 @@ public class ForumQuestionReply extends Content{
     @JoinColumn(name = "parent_reply_id")
     private ForumQuestionReply parentReply;
 
-    @OneToMany(mappedBy = "parentReply", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(mappedBy = "parentReply",  cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     private List<ForumQuestionReply> childReplies ;
+
+    @OneToMany(mappedBy = "forumQuestionReply",  cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+    private List<ForumImage> forumImageList;
 
 }

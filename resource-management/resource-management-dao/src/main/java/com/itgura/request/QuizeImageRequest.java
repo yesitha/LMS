@@ -7,11 +7,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class QuizeImageRequest {
     @JsonProperty( "image")
-    private byte[] image;
+    private UUID image;
 }

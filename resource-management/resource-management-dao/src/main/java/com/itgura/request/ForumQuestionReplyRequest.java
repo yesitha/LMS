@@ -7,17 +7,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ForumQuestionRequest {
+public class ForumQuestionReplyRequest {
     @JsonProperty("is_new")
     private boolean isNew;
-    @JsonProperty("question")
-    private String question;
-    @JsonProperty("forum_question_image_list")
-    private List<ForumQuestionImageRequest> forumQuestionImageRequest;
-
+    @JsonProperty("reply")
+    private String reply;
+    @JsonProperty("forum_reply_image_list")
+    private List<ForumQuestionImageRequest> forumReplyImageRequest;
 }
