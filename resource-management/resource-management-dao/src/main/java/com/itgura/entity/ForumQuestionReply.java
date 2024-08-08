@@ -16,13 +16,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @PrimaryKeyJoinColumn(name = "forum_question_reply_id")
-public class ForumQuestionReply{
-    @Id
-    @Lob
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "forum_question_reply_id")
-    private UUID forumQuestionReplyId;
-
+public class ForumQuestionReply extends Content{
     @Column(name = "reply", columnDefinition = "TEXT")
     private String reply;
 

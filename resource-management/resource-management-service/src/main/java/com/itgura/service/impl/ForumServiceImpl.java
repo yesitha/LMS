@@ -2,6 +2,7 @@ package com.itgura.service.impl;
 
 import com.itgura.entity.ForumQuestion;
 import com.itgura.entity.ForumImage;
+import com.itgura.entity.Lesson;
 import com.itgura.exception.ValueNotExistException;
 import com.itgura.repository.ForumImageRepository;
 import com.itgura.repository.ForumQuestionRepository;
@@ -10,10 +11,13 @@ import com.itgura.request.ForumQuestionRequest;
 
 import com.itgura.request.dto.UserResponseDto;
 import com.itgura.response.dto.ForumQuestionResponseDto;
+import com.itgura.response.dto.mapper.ForumQuestionMapper;
+import com.itgura.response.dto.mapper.LessonMapper;
 import com.itgura.service.ForumService;
 import com.itgura.service.UserDetailService;
 import com.itgura.util.UserUtil;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.ForbiddenException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -62,6 +66,7 @@ public class ForumServiceImpl implements ForumService {
     }
 
     @Override
+    @Transactional
     public String updateQuestion(UUID questionId, ForumQuestionRequest forumQuestionRequest) {
         try {
             UserResponseDto loggedUserDetails = userDetailService.getLoggedUserDetails(UserUtil.extractToken());
@@ -110,6 +115,8 @@ public class ForumServiceImpl implements ForumService {
         }
 
     }
+    @Override
+    @Transactional
     public String deleteQuestion(UUID questionId) throws ValueNotExistException {
         Optional<ForumQuestion> forumQuestion = forumQuestionRepository.findById(questionId);
         if (forumQuestion.isPresent()) {
@@ -121,12 +128,34 @@ public class ForumServiceImpl implements ForumService {
     }
 
     @Override
+    @Transactional
     public List<ForumQuestionResponseDto> getAll() {
-        return null;
+        try {
+            UserResponseDto loggedUserDetails = userDetailService.getLoggedUserDetails(UserUtil.extractToken());
+            if (loggedUserDetails == null) {
+                throw new ValueNotExistException("User not found");
+            } else {
+                   List<ForumQuestion> forumQuestions = forumQuestionRepository.findAll();
+                    return ForumQuestionMapper.INSTANCE.toDtoList(forumQuestions);
+            }
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
     }
-
     @Override
+    @Transactional
     public List<ForumQuestionResponseDto> getMyQuestions() {
-        return null;
+        try {
+            UserResponseDto loggedUserDetails = userDetailService.getLoggedUserDetails(UserUtil.extractToken());
+            if (loggedUserDetails == null) {
+                throw new ValueNotExistException("User not found");
+            } else {
+                UUID userId = loggedUserDetails.getUserId();
+                List<ForumQuestion> forumQuestions = forumQuestionRepository.findByCreatedBy(userId);
+                return ForumQuestionMapper.INSTANCE.toDtoList(forumQuestions);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

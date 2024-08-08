@@ -22,4 +22,5 @@ public class ResourceManagementURI {
     public static final String QUIZZES = "/quizzes";
     public static final String FORUM = "/forum";
     public static final String MY = "/my";
+    public static final String REPLY = "/reply";
 }

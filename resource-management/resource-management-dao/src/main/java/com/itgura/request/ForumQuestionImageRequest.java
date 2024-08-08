@@ -16,7 +16,7 @@ public class ForumQuestionImageRequest {
     @JsonProperty("existing_image_id")
     private UUID id;
     @JsonProperty( "image")
-    private byte[] image;
+    private UUID image;
     @JsonProperty("is_new")
     private boolean isNew;
     @JsonProperty("is_deleted")

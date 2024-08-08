@@ -1,12 +1,19 @@
 package com.itgura.response.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.UUID;
-
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class ForumImageResponseDto {
     @JsonProperty("forum_image_id")
-    private UUID forumImageId;
+    private UUID id;
     @JsonProperty("image")
-    private byte[] image;
+    private UUID image;
 }

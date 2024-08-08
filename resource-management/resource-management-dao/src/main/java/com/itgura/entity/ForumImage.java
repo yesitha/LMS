@@ -19,9 +19,10 @@ public class ForumImage {
     @Lob
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "forum_image_id")
-    private UUID forumImageId;
+    private UUID id;
+
     @Column(name= "image")
-    private byte[] image;
+    private UUID image;
     @ManyToOne
     @JoinColumn(name = "forum_question_id")
     private ForumQuestion forumQuestion;

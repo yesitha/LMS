@@ -51,20 +51,20 @@ public class ForumController {
             return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");
         }
     }
-    @PostMapping(ResourceManagementURI.FORUM + URIPrefix.UPDATE)
-    public AppResponse<String> updateForum(@PathVariable UUID questionId, @RequestBody AppRequest<ForumQuestionRequest> request) {
+    @PostMapping(ResourceManagementURI.FORUM + URIPrefix.UPDATE+URIPrefix.ID)
+    public AppResponse<String> updateForum(@PathVariable UUID id, @RequestBody AppRequest<ForumQuestionRequest> request) {
         try {
-            String s = forumService.updateQuestion(questionId, request.getData());
+            String s = forumService.updateQuestion(id, request.getData());
             return AppResponse.ok(s);
         } catch (Exception e) {
             e.printStackTrace();
             return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");
         }
     }
-    @DeleteMapping(ResourceManagementURI.FORUM + URIPrefix.DELETE)
-    public AppResponse<String> delete(@PathVariable UUID questionId) {
+    @DeleteMapping(ResourceManagementURI.FORUM + URIPrefix.DELETE+URIPrefix.ID)
+    public AppResponse<String> delete(@PathVariable UUID id) {
         try {
-            String s = forumService.deleteQuestion(questionId);
+            String s = forumService.deleteQuestion(id);
             return AppResponse.ok(s);
         } catch (Exception e) {
             e.printStackTrace();

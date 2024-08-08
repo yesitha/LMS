@@ -15,7 +15,7 @@ import java.util.UUID;
 @PrimaryKeyJoinColumn(name = "quiz_image_id")
 public class QuizImage extends Content{
     @Column(name = "image")
-    private byte[] image;
+    private UUID image;
     @OneToOne
     @JoinColumn(name = "quiz_question_id")
     private QuizQuestion quizQuestion;
