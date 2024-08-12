@@ -73,7 +73,7 @@ public class QuizController {
         }
     }
 
-    @PatchMapping(ResourceManagementURI.ID+ResourceManagementURI.PUBLISH)
+    @PatchMapping(ResourceManagementURI.QUIZ+ResourceManagementURI.ID+ResourceManagementURI.PUBLISH)
     public ResponseEntity<String> updateQuizPublishedStatus(@PathVariable UUID id, @RequestParam Boolean isPublished) {
         try {
             boolean updated = quizService.updatePublishedStatus(id, isPublished);

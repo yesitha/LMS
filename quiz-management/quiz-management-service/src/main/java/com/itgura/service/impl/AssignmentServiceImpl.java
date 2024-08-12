@@ -86,4 +86,17 @@ public class AssignmentServiceImpl implements AssignmentService {
                 assignment.getDuration()
         )).collect(Collectors.toList());
     }
+
+    @Override
+    @Transactional
+    public boolean updatePublishedStatus(UUID id, Boolean isPublished) {
+        Optional<Assignment> optionalAssignment = assignmentRepository.findById(id);
+        if (optionalAssignment.isPresent()) {
+            Assignment assignment = optionalAssignment.get();
+            assignment.setIsPublished(isPublished);
+            assignmentRepository.save(assignment);
+            return true;
+        }
+        return false;
+    }
 }

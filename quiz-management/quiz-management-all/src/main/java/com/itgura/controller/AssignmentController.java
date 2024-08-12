@@ -10,6 +10,7 @@ import com.itgura.util.ResourceManagementURI;
 import com.itgura.util.URIPathVariable;
 import com.itgura.util.URIPrefix;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -66,6 +67,20 @@ public class AssignmentController {
             return AppResponse.ok(assignments);
         } catch (Exception e) {
             return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");
+        }
+    }
+
+    @PatchMapping(ResourceManagementURI.ASSIGNMENT+ResourceManagementURI.ID+ResourceManagementURI.PUBLISH)
+    public ResponseEntity<String> updateAssignmentPublishedStatus(@PathVariable UUID id, @RequestParam Boolean isPublished) {
+        try {
+            boolean updated = assignmentService.updatePublishedStatus(id, isPublished);
+            if (updated) {
+                return ResponseEntity.ok("Assignment published status updated successfully.");
+            } else {
+                return ResponseEntity.status(404).body("Assignment not found.");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error updating assignment published status: " + e.getMessage());
         }
     }
 

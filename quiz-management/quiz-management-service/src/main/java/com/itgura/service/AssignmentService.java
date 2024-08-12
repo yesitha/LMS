@@ -12,4 +12,5 @@ public interface AssignmentService {
     AssignmentResponse getAssignmentById(UUID id); // New method
     public void deleteAssignment(UUID id);
     public List<AssignmentSummaryDTO> getAssignmentsByClassIds(List<UUID> classIds) ;
+    public boolean updatePublishedStatus(UUID id, Boolean isPublished);
 }
