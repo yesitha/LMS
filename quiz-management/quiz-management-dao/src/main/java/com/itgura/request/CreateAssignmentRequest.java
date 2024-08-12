@@ -19,6 +19,7 @@ public class CreateAssignmentRequest {
     private List<UUID> fileUrls; // Updated to handle a list of file URLs
     private Timestamp deadline;
     private Boolean isPublished;
+    private Long duration;
     private UUID createdBy;
     private List<UUID> classIds;
 }

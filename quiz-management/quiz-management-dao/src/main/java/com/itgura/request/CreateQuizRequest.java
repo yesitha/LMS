@@ -3,6 +3,7 @@ package com.itgura.request;
 import com.itgura.entity.QuestionType;
 import lombok.*;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,6 +21,8 @@ public class CreateQuizRequest {
     private UUID createdBy;
     private List<QuizQuestionDTO> questions;
     private List<UUID> classIds;
+    private Long duration;
+    private Timestamp deadline;
 
     @Data
     public static class QuizQuestionDTO {

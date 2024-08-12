@@ -4,6 +4,7 @@ import com.itgura.dto.AppRequest;
 import com.itgura.dto.AppResponse;
 import com.itgura.request.CreateAssignmentRequest;
 import com.itgura.response.AssignmentResponse;
+import com.itgura.response.AssignmentSummaryDTO;
 import com.itgura.service.AssignmentService;
 import com.itgura.util.ResourceManagementURI;
 import com.itgura.util.URIPathVariable;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*")
@@ -40,6 +42,28 @@ public class AssignmentController {
             } else {
                 return AppResponse.error(null, "Assignment not found", "Not Found", "404", "");
             }
+        } catch (Exception e) {
+            return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");
+        }
+    }
+
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_TEACHER')")
+    @DeleteMapping(ResourceManagementURI.ASSIGNMENT + "/{id}")
+    public AppResponse<String> deleteAssignment(@PathVariable UUID id) {
+        try {
+            this.assignmentService.deleteAssignment(id);
+            return AppResponse.ok("Assignment deleted successfully");
+        } catch (Exception e) {
+            return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");
+        }
+    }
+
+
+    @GetMapping(ResourceManagementURI.ASSIGNMENT)
+    public AppResponse<List<AssignmentSummaryDTO>> getAssignmentsByClassIds(@RequestParam List<UUID> classIds) {
+        try {
+            List<AssignmentSummaryDTO> assignments = assignmentService.getAssignmentsByClassIds(classIds);
+            return AppResponse.ok(assignments);
         } catch (Exception e) {
             return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");
         }

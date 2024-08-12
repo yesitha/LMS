@@ -39,6 +39,8 @@ public class QuizServiceImpl implements QuizService {
             quiz.setDescription(request.getDescription());
             quiz.setTotalMarks(request.getTotalMarks());
             quiz.setCreatedBy(request.getCreatedBy());
+            quiz.setDeadline(request.getDeadline());
+            quiz.setDuration(request.getDuration());
             quiz.setCreatedAt(new Timestamp(System.currentTimeMillis()));
             quiz.setUpdatedBy(null);
             quiz.setUpdatedAt(null);
@@ -154,5 +156,27 @@ public class QuizServiceImpl implements QuizService {
         }
     }
 
+    @Override
+    @Transactional
+    public void deleteQuiz(UUID id) {
+        if (quizRepository.existsById(id)) {
+            quizRepository.deleteById(id);
+        } else {
+            throw new RuntimeException("Quiz not found with ID: " + id);
+        }
+    }
+    @Override
+    @Transactional
+    public List<QuizSummaryDTO> getQuizzesByClassIds(List<UUID> classIds) {
+        List<Quiz> quizzes = quizRepository.findByClassIdsIn(classIds);
+        return quizzes.stream().map(quiz -> new QuizSummaryDTO(
+                quiz.getId(),
+                quiz.getTitle(),
+                quiz.getDescription(),
+                quiz.getStartTime(),
+                quiz.getDuration(),
+                quiz.getDeadline()
+        )).collect(Collectors.toList());
+    }
 
 }

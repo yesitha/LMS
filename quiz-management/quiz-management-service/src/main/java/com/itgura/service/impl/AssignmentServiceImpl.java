@@ -4,14 +4,17 @@ import com.itgura.entity.Assignment;
 import com.itgura.repository.AssignmentRepository;
 import com.itgura.request.CreateAssignmentRequest;
 import com.itgura.response.AssignmentResponse;
+import com.itgura.response.AssignmentSummaryDTO;
 import com.itgura.service.AssignmentService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class AssignmentServiceImpl implements AssignmentService {
@@ -27,6 +30,7 @@ public class AssignmentServiceImpl implements AssignmentService {
             assignment.setDescription(request.getDescription());
             assignment.setFileUrls(request.getFileUrls()); // Updated to handle list of file URLs
             assignment.setDeadline(request.getDeadline());
+            assignment.setDuration(request.getDuration());
             assignment.setIsPublished(request.getIsPublished());
             assignment.setCreatedBy(request.getCreatedBy());
             assignment.setCreatedAt(new Timestamp(System.currentTimeMillis()));
@@ -59,5 +63,27 @@ public class AssignmentServiceImpl implements AssignmentService {
         } else {
             throw new RuntimeException("Assignment not found");
         }
+    }
+
+    @Override
+    @Transactional
+    public void deleteAssignment(UUID id) {
+        if (assignmentRepository.existsById(id)) {
+            assignmentRepository.deleteById(id);
+        } else {
+            throw new RuntimeException("Assignment not found with ID: " + id);
+        }
+    }
+    @Override
+    @Transactional
+    public List<AssignmentSummaryDTO> getAssignmentsByClassIds(List<UUID> classIds) {
+        List<Assignment> assignments = assignmentRepository.findByClassIdsIn(classIds);
+        return assignments.stream().map(assignment -> new AssignmentSummaryDTO(
+                assignment.getId(),
+                assignment.getTitle(),
+                assignment.getDescription(),
+                assignment.getDeadline(),
+                assignment.getDuration()
+        )).collect(Collectors.toList());
     }
 }

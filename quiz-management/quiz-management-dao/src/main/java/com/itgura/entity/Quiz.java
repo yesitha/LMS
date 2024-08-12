@@ -35,8 +35,13 @@ public class Quiz {
 
     @Column(name = "description")
     private String description;
+
     @Column(name = "total_marks")
     private Double totalMarks;
+    @Column(name = "deadline")
+    private Timestamp deadline;
+    @Column(name = "duration")
+    private Long duration; // Duration in minutes
 
     @Column(name = "start_time")
     private Timestamp startTime;

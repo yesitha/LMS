@@ -38,6 +38,8 @@ public class Assignment {
 
     @Column(name = "deadline")
     private Timestamp deadline;
+    @Column(name = "duration")
+    private Long duration; // Duration in minutes
 
     @Column(name = "is_published", nullable = false)
     private Boolean isPublished = false;
