@@ -179,4 +179,17 @@ public class QuizServiceImpl implements QuizService {
         )).collect(Collectors.toList());
     }
 
+    @Override
+    @Transactional
+    public boolean updatePublishedStatus(UUID id, Boolean isPublished) {
+        Optional<Quiz> optionalQuiz = quizRepository.findById(id);
+        if (optionalQuiz.isPresent()) {
+            Quiz quiz = optionalQuiz.get();
+            quiz.setIsPublished(isPublished);
+            quizRepository.save(quiz);
+            return true;
+        }
+        return false;
+    }
+
 }

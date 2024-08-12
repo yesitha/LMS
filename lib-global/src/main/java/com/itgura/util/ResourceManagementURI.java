@@ -16,6 +16,7 @@ public class ResourceManagementURI {
     public static final String CLASS_ID = "/{classId}";
     public static final String ANNOUNCEMENT = "/announcement";
     public static final String ANNOUNCEMENT_ID = "/{announcementId}";
+    public static final String ID = "/{id}";
 
     public static final String CONTENT = "/content";
     public static final String TAGS = "/tags";
@@ -25,4 +26,5 @@ public class ResourceManagementURI {
     public static final String MY = "/my";
     public static final String REPLY = "/reply";
     public static final String GET_BY_ID = "/get-by-id";
+    public static final String PUBLISH = "/publish";
 }

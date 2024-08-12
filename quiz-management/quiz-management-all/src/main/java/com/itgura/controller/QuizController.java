@@ -73,5 +73,19 @@ public class QuizController {
         }
     }
 
+    @PatchMapping(ResourceManagementURI.ID+ResourceManagementURI.PUBLISH)
+    public ResponseEntity<String> updateQuizPublishedStatus(@PathVariable UUID id, @RequestParam Boolean isPublished) {
+        try {
+            boolean updated = quizService.updatePublishedStatus(id, isPublished);
+            if (updated) {
+                return ResponseEntity.ok("Quiz published status updated successfully.");
+            } else {
+                return ResponseEntity.status(404).body("Quiz not found.");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error updating quiz published status: " + e.getMessage());
+        }
+    }
+
 
 }

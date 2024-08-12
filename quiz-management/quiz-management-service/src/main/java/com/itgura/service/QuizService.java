@@ -13,4 +13,5 @@ public interface QuizService {
     QuizResponse getQuizById(UUID id);
     public void deleteQuiz(UUID id);
     public List<QuizSummaryDTO> getQuizzesByClassIds(List<UUID> classIds);
+    public boolean updatePublishedStatus(UUID id, Boolean isPublished);
 }
