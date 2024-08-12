@@ -19,8 +19,10 @@ public class ResourceManagementURI {
 
     public static final String CONTENT = "/content";
     public static final String TAGS = "/tags";
-    public static final String QUIZZES = "/quizzes";
+    public static final String QUIZ = "/quiz";
+    public static final String ASSIGNMENT = "/assignment";
     public static final String FORUM = "/forum";
     public static final String MY = "/my";
     public static final String REPLY = "/reply";
+    public static final String GET_BY_ID = "/get-by-id";
 }
