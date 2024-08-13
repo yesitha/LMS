@@ -114,7 +114,7 @@ services:
       - ALFRESCO_BASE_URL=http://alfresco:8080
     depends_on:
       - eureka-server
-      - alfresco
+#      - alfresco
     networks:
       - spring
 
