@@ -1,7 +1,7 @@
 package com.itgura.dms_mediator.service.impl;
 import com.itgura.dms_mediator.response.dto.DocumentResponseDto;
 import com.itgura.dms_mediator.service.DmsService;
-import com.itgura.dms_mediator.service.config.AlfrescoConfig;
+import com.itgura.dms_mediator.service.config.NextCloudConfig;
 import com.itgura.exception.ApplicationException;
 import com.itgura.exception.ValueNotFoundException;
 import org.json.JSONObject;
@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.text.MessageFormat;
 import java.util.Base64;
 import java.util.UUID;
@@ -32,7 +33,7 @@ public class DmsServiceImpl implements DmsService {
     private RestTemplate restTemplate;
 
     @Autowired
-    private AlfrescoConfig config;
+    private NextCloudConfig config;
 
 
     @Override
@@ -40,11 +41,7 @@ public class DmsServiceImpl implements DmsService {
         HttpHeaders headers = new HttpHeaders();
         headers.setBasicAuth(config.getUsername(), config.getPassword());
 
-        StringBuilder urlString = new StringBuilder();
-        urlString.append(config.getAlfrescoBaseUrl() + config.getUploadUrl());
-
         try {
-//
 
             // Generate a unique file name by appending _id_[Random UUID]
             String originalFileName = file.getOriginalFilename();
@@ -52,101 +49,93 @@ public class DmsServiceImpl implements DmsService {
             String baseName = originalFileName.substring(0, originalFileName.lastIndexOf("."));
             String uniqueFileName = baseName + "_id_" + UUID.randomUUID() + extension;
 
-            // Convert multipart file to File with unique file name
+            // Build the upload URL
+            String path = config.getUploadRelativePath();
+            String uploadUrl = config.buildUploadUrl(path + "/" + uniqueFileName);
+            System.out.println("uploadUrl: " + uploadUrl);
+
+            // Convert MultipartFile to a File
             File tempFile = convertMultiPartToFile(file, uniqueFileName);
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
             headers.setContentLength(tempFile.length());
 
-//
-            MultiValueMap<String, Object> fileValueMap = new LinkedMultiValueMap<>();
+            // Create a resource for the file to be uploaded
+            FileSystemResource resource = new FileSystemResource(tempFile);
 
-            fileValueMap.add("filedata", new FileSystemResource(tempFile));
-            fileValueMap.add("relativePath", config.getUploadRelativePath());
-            fileValueMap.add("name", uniqueFileName);
-            HttpEntity<MultiValueMap<String, Object>> entity = new HttpEntity<>(fileValueMap,
-                    headers);
-
+            // Use RestTemplate to upload the file
+            HttpEntity<FileSystemResource> entity = new HttpEntity<>(resource, headers);
             RestTemplate restTemplate = new RestTemplate();
-            ResponseEntity<String> responseEntity = restTemplate.exchange(urlString.toString(), HttpMethod.POST, entity,
-                    String.class);
+            ResponseEntity<String> responseEntity = restTemplate.exchange(uploadUrl, HttpMethod.PUT, entity, String.class);
 
-
+            // Clean up temporary file
             tempFile.delete();
 
-
-            JSONObject jsonResponse = new JSONObject(responseEntity.getBody());
-            String alfrescoDocumentId = jsonResponse.getJSONObject("entry").getString("id");
-
-            if (alfrescoDocumentId != null) {
-                return alfrescoDocumentId;
+            // Check for successful response
+            if (responseEntity.getStatusCode().is2xxSuccessful()) {
+                return uniqueFileName;  // Return the unique file name or path as a reference ID
             } else {
-                throw new ApplicationException("Failed to upload document to Alfresco: " + responseEntity.getStatusCode());
+                throw new ApplicationException("Failed to upload document to Nextcloud: " + responseEntity.getStatusCode());
             }
         } catch (Exception e) {
             throw new ApplicationException("Exception: " + e.getMessage(), e);
         }
-
     }
-
     @Override
-    public DocumentResponseDto downloadDocument(String alfrescoDocumentId) throws ValueNotFoundException, ApplicationException {
+    public DocumentResponseDto downloadDocument(String documentPath) throws ValueNotFoundException, ApplicationException {
         HttpHeaders headers = new HttpHeaders();
         headers.setBasicAuth(config.getUsername().trim(), config.getPassword());
 
-        // URL to access the document content
-        String fileUrl = config.getAlfrescoBaseUrl() + config.getDownloadUrl();
-        StringBuilder urlString = new StringBuilder();
-        urlString.append(MessageFormat.format(fileUrl, alfrescoDocumentId));
+        // Build the URL to access the document content
+        String downloadUrl = config.buildDownloadUrl(config.getUploadRelativePath(), documentPath);
+        System.out.println("downloadUrl: " + downloadUrl);
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
         ResponseEntity<Resource> response;
         try {
             response = restTemplate.exchange(
-                    urlString.toString(),
+                    downloadUrl,
                     HttpMethod.GET,
                     new HttpEntity<>(headers),
                     Resource.class);
         } catch (HttpClientErrorException e) {
-
             if (e.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
                 throw new ValueNotFoundException("Document not found: " + e.getStatusCode());
             } else {
                 throw new ApplicationException("Client error during document download: " + e.getStatusCode());
             }
         } catch (HttpServerErrorException e) {
-
             throw new ApplicationException("Server error during document download: " + e.getStatusCode());
         }
 
         if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+            Resource resource = response.getBody();
+            String base64Content = convertResourceToBase64(resource);
 
-            Resource imageResource = response.getBody();
-            String base64Image = convertResourceToBase64(imageResource);
-            // Extract filename from 'Content-Disposition' header if available
+            // Extract filename from 'Content-Disposition' header if available, or use documentPath
             String filename = extractOriginalFileName(response.getHeaders().getContentDisposition().getFilename());
 
-            return new DocumentResponseDto(base64Image, filename);
+
+            return new DocumentResponseDto(base64Content, filename);
         } else {
             // Handle unexpected scenarios
+            System.out.println(response);
             throw new ApplicationException("Unexpected error during document download: " + response.getStatusCode());
         }
     }
 
     @Override
-    public String deleteDocument(String alfrescoDocumentId) throws ApplicationException, ValueNotFoundException {
+    public String deleteDocument(String documentPath) throws ApplicationException, ValueNotFoundException {
         HttpHeaders headers = new HttpHeaders();
         headers.setBasicAuth(config.getUsername(), config.getPassword());
 
-        // Include the 'permanent=true' query parameter in the delete URL
-        String deleteUrl = config.getAlfrescoBaseUrl() + config.getDeleteUrl();
-        StringBuilder urlString = new StringBuilder();
-        urlString.append(MessageFormat.format(deleteUrl, alfrescoDocumentId));
+        // Build the delete URL using the document path
+        String deleteUrl = config.buildDeleteUrl(config.getUploadRelativePath(), documentPath);
 
         try {
-            restTemplate.exchange(urlString.toString(), HttpMethod.DELETE, new HttpEntity<>(headers), String.class);
-            return "Document with ID: " + alfrescoDocumentId + " deleted successfully.";
+            restTemplate.exchange(deleteUrl, HttpMethod.DELETE, new HttpEntity<>(headers), String.class);
+            return "Document at path: " + documentPath + " deleted successfully.";
         } catch (HttpClientErrorException.NotFound e) {
-            throw new ValueNotFoundException("Document not found with ID: " + alfrescoDocumentId);
+            throw new ValueNotFoundException("Document not found at path: " + documentPath);
         } catch (HttpClientErrorException e) {
             throw new ApplicationException("Client error during document deletion: " + e.getMessage());
         } catch (HttpServerErrorException e) {
