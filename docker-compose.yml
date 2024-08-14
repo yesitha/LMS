@@ -115,7 +115,9 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka
       - EUREKA_INSTANCE_HOSTNAME=dms-mediator
-      - NEXTCLOUD_BASE_URL=http://nextcloud:8080
+      - NEXTCLOUD_BASE_URL=http://nextcloud:80
+      - NEXTCLOUD_USERNAME=admin
+      - NEXTCLOUD_PASSWORD=admin
     depends_on:
       - eureka-server
       - nextcloud
@@ -132,16 +134,18 @@ services:
       - "8080:80"
     volumes:
       - nextcloud_data:/var/www/html
+#      - ./set_trusted_domains.sh:/usr/local/bin/set_trusted_domains.sh
     environment:
       - POSTGRES_DB=alfresco
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=root
       - POSTGRES_HOST=postgres-main
+      - POSTGRES_PORT=5432
     depends_on:
       - postgres-main
     networks:
-      - spring
       - nextcloud-network
+#    entrypoint: ["/bin/sh", "-c", "/usr/local/bin/set_trusted_domains.sh && /entrypoint.sh apache2-foreground"]
 
 #  alfresco:
 #    image: docker.io/alfresco/alfresco-content-repository-community:23.2.1
@@ -223,3 +227,11 @@ volumes:
 ##commands
 #  mvn clean package -P build-docker-image
 #  docker-compose up -d
+
+#  docker exec -it nextcloud /bin/bash
+#  nano /var/www/html/config/config.php
+#  'trusted_domains' =>
+#  array (
+#  0 => 'localhost',
+#  1 => 'nextcloud',
+#  ),
