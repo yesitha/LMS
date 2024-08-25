@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping(URIPrefix.API + URIPrefix.V1 + URIPathVariable.PAYMENT_SERVICE)
 @RequiredArgsConstructor
 public class PermissionController {
