@@ -23,8 +23,7 @@ public class PermissionController {
     @Autowired
     private final PermissionService permissionService;
 
-
-
+ // can only be used to check has access to session and if purchased wise content then it can check
     @PostMapping("/hasPermission")
     public AppResponse<List<hasPermissionResponse>> hasPermission(@Valid @RequestBody AppRequest<hasPermissionRequest> request) {
 
@@ -39,4 +38,12 @@ public class PermissionController {
         }
 
 
+    @PostMapping("/permission/getEmailsHasAccessToSession"+URIPathVariable.SESSION_ID)
+    public AppResponse<List<String>> getEmailsHasAccessToSession(@PathVariable String sessionId) {
+        try{
+            return AppResponse.ok(permissionService.getEmailsHasAccessToSession(sessionId));
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

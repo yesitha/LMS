@@ -9,4 +9,6 @@ import java.util.List;
 
 public interface PermissionService {
     List<hasPermissionResponse> hasPermission(hasPermissionRequest data) throws ApplicationException;
+
+    List<String> getEmailsHasAccessToSession(String sessionId);
 }

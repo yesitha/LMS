@@ -76,4 +76,15 @@ public class SessionController {
         }
     }
 
+    @PostMapping(ResourceManagementURI.SESSION + URIPrefix.GIVE_PERMISSION_TO_VIDEOS+URIPrefix.SESSION_ID+URIPrefix.EMAIL)
+    public AppResponse<List<UUID>> givePermissionToVideos(@PathVariable UUID sessionId, @PathVariable String email) {
+        try {
+            List<UUID> ids = sessionService.givePermissionToVideos(sessionId,email);
+            return AppResponse.ok(ids);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");
+        }
+    }
+
 }

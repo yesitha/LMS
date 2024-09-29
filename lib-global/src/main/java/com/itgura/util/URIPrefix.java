@@ -27,4 +27,6 @@ public class URIPrefix {
     public static final String GET_ACCESS_TIME_DURATION = "/get-access-time-duration";
     public static final String GET_PRICE = "/get-price";
     public static final String UPDATE_TAGS = "/update-tags";
+    public static final String GIVE_PERMISSION_TO_VIDEOS = "/give-permission-to-videos";
+    public static final String EMAIL = "/{email}";
 }

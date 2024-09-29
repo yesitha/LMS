@@ -20,4 +20,5 @@ public interface SessionService {
     String updateSession(UUID sessionId, SessionRequest request) throws ApplicationException, CredentialNotFoundException, BadRequestRuntimeException, URISyntaxException;
     String deleteSession(UUID sessionId) throws ApplicationException, CredentialNotFoundException, BadRequestRuntimeException, URISyntaxException;
 
+    List<UUID> givePermissionToVideos(UUID sessionId, String email) throws ValueNotExistException;
 }

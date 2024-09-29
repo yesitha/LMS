@@ -63,13 +63,14 @@ public class PaymentServiceImpl implements PaymentService {
             if (data.getPaymentAmount() / months.length == classMonthlyPayment) {
                 transaction.setAmount(classMonthlyPayment);
                 Transaction transaction1= transactionRepository.save(transaction);
-                //todo: cron job to update studentTransactionContent table
+                //todo: cron job to update studentTransactionContent table - (delete expired contents-done)
                 List<UUID> sessionIds = findAllSessionsInMonth(data.getClassId(), Calendar.getInstance().get(Calendar.YEAR), month);
                 for (UUID sessionId : sessionIds) {
                     StudentTransactionContent studentTransactionContent = new StudentTransactionContent();
                     studentTransactionContent.setStudentEmail(data.getStudentEmail());
                     studentTransactionContent.setContentId(sessionId);
                     studentTransactionContent.setTransaction(transaction1);
+                    giveVideosAccessInSession(sessionId,data.getStudentEmail());
                 }
 
 
@@ -80,6 +81,34 @@ public class PaymentServiceImpl implements PaymentService {
 
         }
         return "Payment saved successfully";
+
+    }
+
+    private void giveVideosAccessInSession(UUID sessionId, String studentEmail) throws ApplicationException {
+        String url = "http://lms-gateway/resource-management/session/give-permission-to-videos/" + sessionId + "/" + studentEmail;
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + UserUtil.extractToken());
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        try {
+            ResponseEntity<AppResponse> responseEntity = restTemplate.exchange(url, HttpMethod.POST, entity, AppResponse.class);
+            AppResponse response = responseEntity.getBody();
+
+            if (response == null || response.getData() == null) {
+                throw new ApplicationException("Error while getting sessions in month: response or data is null");
+            }
+
+            System.out.println("Access Given "+studentEmail+" for following video ids(UUID) "+response.getData());
+
+
+
+        } catch (HttpClientErrorException.Forbidden e) {
+            throw new ApplicationException("Access is forbidden: " + e.getMessage());
+        } catch (HttpClientErrorException e) {
+            throw new ApplicationException("Client error: " + e.getStatusCode() + " " + e.getMessage());
+        } catch (Exception e) {
+            throw new ApplicationException("Server error: " + e.getMessage());
+        }
 
     }
 

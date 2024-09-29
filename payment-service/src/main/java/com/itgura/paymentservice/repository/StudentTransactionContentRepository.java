@@ -26,4 +26,7 @@ public interface StudentTransactionContentRepository extends JpaRepository<Stude
 
     @Query("SELECT stc FROM StudentTransactionContent stc WHERE stc.contentExpireDate < :currentDate")
     List<StudentTransactionContent> findByContentExpireDateBefore(Date currentDate);
+
+    @Query("SELECT stc FROM StudentTransactionContent stc WHERE stc.contentId = :uuid")
+    List<StudentTransactionContent> findByContentId(UUID uuid);
 }
