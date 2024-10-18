@@ -35,7 +35,7 @@ public class AssignmentSubmission {
     private Timestamp submittedAt;
 
     @Column(name = "file_url")
-    private UUID fileUrl; // URL to the student's uploaded file
+    private String fileUrl; // URL to the student's uploaded file
 
     @Column(name = "created_by", nullable = false)
     private UUID createdBy;

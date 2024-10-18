@@ -4,6 +4,7 @@ import com.itgura.dto.AppRequest;
 import com.itgura.dto.AppResponse;
 import com.itgura.request.CreateAssignmentRequest;
 import com.itgura.request.CreateQuizRequest;
+import com.itgura.request.QuizSubmissionRequest;
 import com.itgura.response.QuizResponse;
 import com.itgura.response.QuizSummaryDTO;
 import com.itgura.service.QuizService;
@@ -84,6 +85,15 @@ public class QuizController {
             }
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Error updating quiz published status: " + e.getMessage());
+        }
+    }
+    @PostMapping(ResourceManagementURI.QUIZ + ResourceManagementURI.ANSWERTOQUIZ)
+    public AppResponse<Boolean> answerToQuiz(@RequestBody AppRequest<QuizSubmissionRequest> request) {
+        try {
+            Boolean b = this.quizService.answerToQuiz(request.getData());
+            return AppResponse.ok(b);
+        } catch (Exception e) {
+            return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");
         }
     }
 
