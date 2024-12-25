@@ -3,9 +3,12 @@ package com.itgura.authservice.controller;
 
 import com.itgura.authservice.dto.request.AuthenticationRequest;
 import com.itgura.authservice.dto.request.RegisterRequest;
+import com.itgura.authservice.dto.request.changeRoleRequest;
 import com.itgura.authservice.dto.response.AuthenticationResponse;
 import com.itgura.authservice.services.AuthenticationService;
 import com.itgura.dto.AppResponse;
+import com.itgura.exception.ApplicationException;
+import com.itgura.exception.ValueNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -61,6 +64,23 @@ public class AuthenticationController {
             return AppResponse.ok(res);
         } catch (Exception e) {
             return AppResponse.error(null, "Server Error", "500", "", e.getMessage());
+        }
+    }
+
+    //ToDo: Remove this endpoint after testing
+
+    @PostMapping("/changeUserRole")
+    public AppResponse<String> changeUserRole(@RequestBody changeRoleRequest role) {
+        {
+            try {
+                return AppResponse.ok(authenticationService.changeUserRole(role));
+            } catch (ValueNotFoundException e) {
+                return AppResponse.error(null, "Value not found", "404", "", e.getMessage());
+            } catch (ApplicationException e) {
+                return AppResponse.error(null, "Application Error", "500", "", e.getMessage());
+            }
+
+
         }
     }
 

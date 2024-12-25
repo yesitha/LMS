@@ -16,10 +16,9 @@ public class RouteValidator {
             "/auth-service/register",
             "/auth-service/refresh",
             "/auth-service/validateToken",
+            "/auth-service/changeUserRole",
             "/eureka",
             "/resource-management/public"
-
-
 
     );
 

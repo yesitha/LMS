@@ -2,21 +2,36 @@ package com.itgura.authservice.services;
 
 import com.itgura.authservice.dto.request.AuthenticationRequest;
 import com.itgura.authservice.dto.request.RegisterRequest;
+import com.itgura.authservice.dto.request.changeRoleRequest;
 import com.itgura.authservice.dto.response.AuthenticationResponse;
 import com.itgura.authservice.entity.Role;
 import com.itgura.authservice.entity.User;
 import com.itgura.authservice.repository.UserRepository;
+import com.itgura.exception.ApplicationException;
+import com.itgura.exception.ValueNotExistException;
+import com.itgura.util.UserUtil;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
+
+    @Value("${jwt.secretKey}")
+    private String SECRET_KEY;
+
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
@@ -64,5 +79,36 @@ public class AuthenticationService {
 
     public Boolean validateToken(String token) {
         return jwtService.validateToken(token);
+    }
+
+    public String changeUserRole( changeRoleRequest role) throws ApplicationException {
+
+
+        String authorizationHeader = UserUtil.extractToken();
+        if (!authorizationHeader.isBlank()) {
+
+            String token = authorizationHeader;
+
+            Claims claims = Jwts.parser()
+                    .setSigningKey(SECRET_KEY) // Replace with your actual secret key
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+
+            String email = claims.getSubject();
+            Optional<User> user = userRepository.findByEmail(email);
+
+            if (user.isPresent()) {
+                user.get().setRole(Role.valueOf(role.getChangeRole()));
+                userRepository.save(user.get());
+                return "Role changed successfully";
+            }else {
+                throw new ValueNotExistException("User not found");
+            }
+
+        }else {
+            throw new ApplicationException("Token not found");
+        }
+
     }
 }
