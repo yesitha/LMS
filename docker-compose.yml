@@ -1,0 +1,237 @@
+services:
+  postgres-main:
+    container_name: postgres-main
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: itgura
+      PGDATA: /data/postgres
+
+
+    volumes:
+      - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
+      - postgres:/data/postgres
+    networks:
+      - postgres-main
+      - nextcloud-network
+    restart: unless-stopped
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    networks:
+      - postgres-main
+    restart: unless-stopped
+
+  eureka-server:
+    container_name: eureka-server
+    image: yesitha/eureka-server:latest
+    ports:
+      - "8761:8761"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - spring
+
+  lms-gateway:
+    container_name: lms-gateway
+    image: yesitha/lms-gateway:latest
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka
+      - EUREKA_INSTANCE_HOSTNAME=lms-gateway
+    depends_on:
+      - eureka-server
+    networks:
+      - spring
+
+  auth-service:
+    container_name: auth-service
+    image: yesitha/auth-service:latest
+    ports:
+      - "8098:8098"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka
+      - EUREKA_INSTANCE_HOSTNAME=auth-service
+    depends_on:
+      - eureka-server
+      - postgres-main
+    networks:
+      - spring
+      - postgres-main
+
+  payment-service:
+    container_name: payment-service
+    image: yesitha/payment-service:latest
+    ports:
+      - "8199:8199"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka
+      - EUREKA_INSTANCE_HOSTNAME=payment-service
+    depends_on:
+      - eureka-server
+      - postgres-main
+    networks:
+      - spring
+      - postgres-main
+
+  resource-management:
+    container_name: resource-management
+    image: yesitha/resource-management-all:latest
+    ports:
+      - "8092:8092"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka
+      - EUREKA_INSTANCE_HOSTNAME=resource-management
+    depends_on:
+      - eureka-server
+      - postgres-main
+    networks:
+      - spring
+      - postgres-main
+
+  dms-mediator:
+    container_name: dms-mediator
+    image: yesitha/dms-mediator-all:latest
+    ports:
+      - "8099:8099"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka
+      - EUREKA_INSTANCE_HOSTNAME=dms-mediator
+      - NEXTCLOUD_BASE_URL=http://nextcloud:80
+      - NEXTCLOUD_USERNAME=admin
+      - NEXTCLOUD_PASSWORD=admin
+    depends_on:
+      - eureka-server
+      - nextcloud
+      - postgres-main
+
+    networks:
+      - spring
+      - nextcloud-network
+
+  nextcloud:
+    image: nextcloud:latest
+    container_name: nextcloud
+    ports:
+      - "8080:80"
+    volumes:
+      - nextcloud_data:/var/www/html
+#      - ./set_trusted_domains.sh:/usr/local/bin/set_trusted_domains.sh
+    environment:
+      - POSTGRES_DB=alfresco
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_HOST=postgres-main
+      - POSTGRES_PORT=5432
+    depends_on:
+      - postgres-main
+    networks:
+      - nextcloud-network
+#    entrypoint: ["/bin/sh", "-c", "/usr/local/bin/set_trusted_domains.sh && /entrypoint.sh apache2-foreground"]
+
+#  alfresco:
+#    image: docker.io/alfresco/alfresco-content-repository-community:23.2.1
+#    mem_limit: 1900m
+#    environment:
+#      JAVA_TOOL_OPTIONS: >-
+#        -Dencryption.keystore.type=JCEKS
+#        -Dencryption.cipherAlgorithm=DESede/CBC/PKCS5Padding
+#        -Dencryption.keyAlgorithm=DESede
+#        -Dencryption.keystore.location=/usr/local/tomcat/shared/classes/alfresco/extension/keystore/keystore
+#        -Dmetadata-keystore.password=mp6yc0UD9e
+#        -Dmetadata-keystore.aliases=metadata
+#        -Dmetadata-keystore.metadata.password=oKIWzVdEdA
+#        -Dmetadata-keystore.metadata.algorithm=DESede
+#      JAVA_OPTS: >-
+#        -Ddb.driver=org.postgresql.Driver
+#        -Ddb.username=postgres
+#        -Ddb.password=root
+#        -Ddb.url=jdbc:postgresql://postgres-main:5432/alfresco
+#        -Dshare.host=localhost
+#        -Dshare.port=8085
+##        -Dcsrf.filter.enabled=false
+##        -Ddeployment.method=DOCKER_COMPOSE
+#
+#    depends_on:
+#      - postgres-main
+#    ports:
+#      - "8080:8080"
+#    networks:
+#      - alfresco-network
+#      - postgres-main
+#
+##  postgres:
+##    image: postgres:14.4
+##    mem_limit: 512m
+##    environment:
+##      - POSTGRES_PASSWORD=alfresco
+##      - POSTGRES_USER=alfresco
+##      - POSTGRES_DB=alfresco
+##    ports:
+##      - "5433:5432"
+##    networks:
+##      - alfresco-network
+##    volumes:
+##      - alfresco_data:/var/lib/postgresql/data
+#
+#  share:
+#    image: docker.io/alfresco/alfresco-share:23.2.2
+#    mem_limit: 1g
+#    environment:
+#      REPO_HOST: "alfresco"
+#      REPO_PORT: "8080"
+#      JAVA_OPTS: >-
+#        -Dalfresco.host=localhost
+#        -Dalfresco.port=8080
+#        -Dalfresco.context=alfresco
+#        -Dalfresco.protocol=http
+#    networks:
+#        - alfresco-network
+#    ports:
+#        - "8085:8080"
+
+networks:
+    postgres-main:
+        driver: bridge
+    spring:
+        driver: bridge
+    nextcloud-network:
+      driver: bridge
+
+volumes:
+    postgres:
+    pgadmin:
+    nextcloud_data:
+#    alfresco_data:
+
+
+
+##commands
+#  mvn clean package -P build-docker-image
+#  docker-compose up -d
+
+#  docker exec -it nextcloud /bin/bash
+#  nano /var/www/html/config/config.php
+#  'trusted_domains' =>
+#  array (
+#  0 => 'localhost',
+#  1 => 'nextcloud',
+#  ),

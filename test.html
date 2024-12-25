@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign in with Google</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        .container {
+            text-align: center;
+        }
+        .btn-google {
+            background-color: #4285F4;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .btn-google:hover {
+            background-color: #357AE8;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Sign in with Google</h1>
+    <button class="btn-google" onclick="window.location.href = 'http://localhost:8081/auth-service/oauth2/authorization/google'">
+        Sign in with Google
+    </button>
+</div>
+</body>
+</html>

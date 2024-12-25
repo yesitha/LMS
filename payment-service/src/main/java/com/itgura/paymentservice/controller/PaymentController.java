@@ -23,6 +23,7 @@ import java.text.DecimalFormat;
 import java.util.UUID;
 
 @RestController
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping("/api/v1/payment-service")
 @RequiredArgsConstructor
 public class PaymentController {

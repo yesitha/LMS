@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service
+  labels:
+    app: auth-service
+  namespace: itgura
+  annotations:
+    linkerd.io/inject: enabled
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-service
+  template:
+    metadata:
+      name: auth-service
+      labels:
+        app: auth-service
+    spec:
+      containers:
+        - name: auth-service
+          image: yesitha/auth-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8098
+              protocol: TCP
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: kube
+
+      restartPolicy: Always
+      

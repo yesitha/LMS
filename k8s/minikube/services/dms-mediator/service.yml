@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: dms-mediator
+  namespace: itgura
+  annotations:
+    linkerd.io/inject: enabled
+spec:
+  selector:
+    app: dms-mediator
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8099
+  type: ClusterIP
+  

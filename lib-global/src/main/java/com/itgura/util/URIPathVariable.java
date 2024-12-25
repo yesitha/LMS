@@ -15,5 +15,6 @@ public class URIPathVariable {
 
 
     public static final String PAYMENT_SERVICE = "/payment-service";
+	public static final String QUIZ_SERVICE = "/quiz-service";
     public static final String CONTENT_ID = "/{contentId}";
 }

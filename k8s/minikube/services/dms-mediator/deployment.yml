@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dms-mediator
+  labels:
+    app: dms-mediator
+  namespace: itgura
+  annotations:
+    linkerd.io/inject: enabled
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dms-mediator
+  template:
+    metadata:
+      name: dms-mediator
+      labels:
+        app: dms-mediator
+    spec:
+      containers:
+        - name: dms-mediator
+          image: yesitha/dms-mediator-all:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8099
+              protocol: TCP
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: kube
+
+      restartPolicy: Always
+      

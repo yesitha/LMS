@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: payment-service
+  namespace: itgura
+  annotations:
+    linkerd.io/inject: enabled
+spec:
+  selector:
+    app: payment-service
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8199
+  type: ClusterIP

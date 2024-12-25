@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resource-management
+  labels:
+    app: resource-management
+  namespace: itgura
+  annotations:
+    linkerd.io/inject: enabled
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: resource-management
+  template:
+    metadata:
+      name: resource-management
+      labels:
+        app: resource-management
+    spec:
+      containers:
+        - name: resource-management
+          image: yesitha/resource-management-all:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8092
+              protocol: TCP
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: kube
+      restartPolicy: Always
