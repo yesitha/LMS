@@ -9,7 +9,6 @@ import com.itgura.dto.AppResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,38 +19,28 @@ public class AuthenticationController {
     @Autowired
     private final AuthenticationService authenticationService;
 
-//    @PostMapping("/register")
-//    public AppResponse<AuthenticationResponse> register(@RequestBody RegisterRequest registerRequest){
-//        try {
-//            AuthenticationResponse res = authenticationService.register(registerRequest);
-//            return AppResponse.ok(res);
-//        } catch (Exception e) {
-//            return AppResponse.error(null, "Server Error", "500", "", e.getMessage());
-//        }
-//
-//    }
-//
-//    @PostMapping("/authenticate")
-//    public AppResponse<AuthenticationResponse> register(@RequestBody AuthenticationRequest authenticationRequest){
-//        try {
-//            AuthenticationResponse res = authenticationService.authenticate(authenticationRequest);
-//            return AppResponse.ok(res);
-//        } catch (Exception e) {
-//            return AppResponse.error(null, "Server Error", "500", "", e.getMessage());
-//
-//        }
-//
-//    }
+    @PostMapping("/register")
+    public AppResponse<AuthenticationResponse> register(@RequestBody RegisterRequest registerRequest){
+        try {
+            AuthenticationResponse res = authenticationService.register(registerRequest);
+            return AppResponse.ok(res);
+        } catch (Exception e) {
+            return AppResponse.error(null, "Server Error", "500", "", e.getMessage());
+        }
 
-//    @PostMapping("/getAccessToken")
-//    public AppResponse<AuthenticationResponse> getAccessToken(OAuth2AuthenticationToken auth){
-//        try {
-//            AuthenticationResponse res = authenticationService.getAccessToken(auth);
-//            return AppResponse.ok(res);
-//        } catch (Exception e) {
-//            return AppResponse.error(null, "Server Error", "500", "", e.getMessage());
-//        }
-//    }
+    }
+
+    @PostMapping("/authenticate")
+    public AppResponse<AuthenticationResponse> register(@RequestBody AuthenticationRequest authenticationRequest){
+        try {
+            AuthenticationResponse res = authenticationService.authenticate(authenticationRequest);
+            return AppResponse.ok(res);
+        } catch (Exception e) {
+            return AppResponse.error(null, "Server Error", "500", "", e.getMessage());
+
+        }
+
+    }
 
     @PostMapping("/refresh")
     public AppResponse<AuthenticationResponse> refresh(@RequestParam("token") String refreshToken){

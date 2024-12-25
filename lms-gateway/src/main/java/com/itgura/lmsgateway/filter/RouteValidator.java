@@ -17,9 +17,7 @@ public class RouteValidator {
             "/auth-service/refresh",
             "/auth-service/validateToken",
             "/eureka",
-            "/resource-management/public",
-            "/auth-service/login/oauth2/code/google",
-            "auth-service/oauth2/authorization/google"
+            "/resource-management/public"
 
 
 

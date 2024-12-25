@@ -33,3 +33,4 @@ auth-service/mvnw.cmd
 resource-management/resource-management-all/target/resource-management-all-1.0.0.jar.original
 *.lst
 /target/*
+auth-service/src/main/resources/application.properties

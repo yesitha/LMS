@@ -22,7 +22,7 @@
         <module>auth-service</module>
         <module>dms-mediator</module>
         <module>payment-service</module>
-        <module>youtube-permission-manager</module>
+        <module>quiz-management</module>
 
 
     </modules>

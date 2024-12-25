@@ -8,7 +8,6 @@ import com.itgura.exception.BadRequestRuntimeException;
 import com.itgura.exception.ValueNotExistException;
 import com.itgura.repository.*;
 import com.itgura.request.SessionRequest;
-import com.itgura.request.dto.PermissionGrantDto;
 import com.itgura.request.dto.UserResponseDto;
 import com.itgura.response.dto.MaterialResponseDto;
 import com.itgura.response.dto.SessionResponseDto;
@@ -19,7 +18,6 @@ import com.itgura.service.ContentPermissionService;
 import com.itgura.service.SessionService;
 import com.itgura.service.UserDetailService;
 import com.itgura.util.UserUtil;
-import com.itgura.util.rabbitMQMessageProducer;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.ForbiddenException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,10 +48,6 @@ public class SessionServiceImpl implements SessionService {
     private ScheduleSessionRepositoryRepository scheduleSessionRepositoryRepository;
     @Autowired
     private ContentPermissionService contentPermissionService;
-    @Autowired
-    private MaterialRepository materialRepository;
-    @Autowired
-    private rabbitMQMessageProducer producer;
 
     @Override
     @Transactional
@@ -320,35 +314,6 @@ public class SessionServiceImpl implements SessionService {
         } else {
             throw new ForbiddenException("User is not authorized to perform this operation");
         }
-    }
-
-    @Override
-    public List<UUID> givePermissionToVideos(UUID sessionId, String email) throws ValueNotExistException {
-        Session session = sessionRepository.findById(sessionId).orElseThrow(() -> new ValueNotExistException("Session not found with id " + sessionId));
-        List<Material> materials = session.getMaterialList();
-        List<Material> VideoMaterials = new ArrayList<>();
-        for (Material m : materials) {
-            if (m.getMaterialType().equals("VIDEO")) {
-                List<Material> allVideoMaterialsBySession = materialRepository.findAllVideoMaterialsBySession(session);
-                VideoMaterials.addAll(allVideoMaterialsBySession);
-                List<String> mailList = new ArrayList<>();
-                mailList.add(email);
-                givePermissionToYoutubeVideo(m.getReference(), mailList);
-            }
-        }
-
-
-            return VideoMaterials.stream()
-                    .map(Material::getContentId)
-                    .collect(Collectors.toList());
-
-    }
-
-    private void givePermissionToYoutubeVideo(String videoUrl, List<String> mailList) {
-        PermissionGrantDto permissionGrantDto = new PermissionGrantDto();
-        permissionGrantDto.setVideoUrl(videoUrl);
-        permissionGrantDto.setEmails(mailList);
-        producer.publish(permissionGrantDto,"internal.exchange","permission.grant.routing-key");
     }
 
     private boolean addSessionToSchedule(UUID classId,Session session,Boolean isNew) throws ValueNotExistException {
