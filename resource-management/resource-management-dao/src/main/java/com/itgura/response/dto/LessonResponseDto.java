@@ -55,5 +55,7 @@ public class LessonResponseDto {
     private String updatedByName;
     @JsonProperty("content_access_type")
     private ContentAccessType contentAccesstype;
+    @JsonProperty("image")
+    private String image;
 
 }

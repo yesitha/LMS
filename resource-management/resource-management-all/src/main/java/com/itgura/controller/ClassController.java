@@ -12,6 +12,7 @@ import com.itgura.util.URIPrefix;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -34,17 +35,19 @@ public class ClassController {
         }
     }
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    @PostMapping(ResourceManagementURI.CLASS + ResourceManagementURI.CREATE)
-    public AppResponse<String> createClass(@RequestBody AppRequest<ClassRequest> request) {
+    @PostMapping(value = ResourceManagementURI.CLASS + ResourceManagementURI.CREATE,consumes = "multipart/form-data")
+    public AppResponse<String> createClass(@RequestPart("request") AppRequest<ClassRequest> request,@RequestPart(value = "image", required = false) MultipartFile file) {
 
         try {
 
-            String response = this.classService.create(request.getData());
+            String response = this.classService.create(request.getData(), file);
             return AppResponse.ok(response);
         } catch (Exception e) {
             return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");
         }
     }
+
+
 
     //getClassFee
 
@@ -68,10 +71,10 @@ public class ClassController {
         }
     }
     
-    @PatchMapping(ResourceManagementURI.CLASS + URIPrefix.UPDATE + URIPrefix.ID)
-    public AppResponse<String> updateClass(@PathVariable("id") UUID id, @RequestBody AppRequest<ClassRequest> request) {
+    @PatchMapping(value=ResourceManagementURI.CLASS + URIPrefix.UPDATE + URIPrefix.ID,consumes = "multipart/form-data")
+    public AppResponse<String> updateClass(@PathVariable("id") UUID id, @RequestPart("request") AppRequest<ClassRequest> request,@RequestPart(value = "image", required = false) MultipartFile file) {
         try {
-            String update = this.classService.update(id, request.getData());
+            String update = this.classService.update(id, request.getData(), file);
             return AppResponse.ok(update);
         } catch (Exception e) {
             return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");

@@ -81,7 +81,7 @@ public class AuthenticationService {
         return jwtService.validateToken(token);
     }
 
-    public String changeUserRole( changeRoleRequest role) throws ApplicationException {
+    public String changeUserRole( String role) throws ApplicationException {
 
 
         String authorizationHeader = UserUtil.extractToken();
@@ -99,7 +99,7 @@ public class AuthenticationService {
             Optional<User> user = userRepository.findByEmail(email);
 
             if (user.isPresent()) {
-                user.get().setRole(Role.valueOf(role.getChangeRole()));
+                user.get().setRole(Role.valueOf(role));
                 userRepository.save(user.get());
                 return "Role changed successfully";
             }else {
@@ -110,5 +110,18 @@ public class AuthenticationService {
             throw new ApplicationException("Token not found");
         }
 
+    }
+
+    public String changeUserRole(changeRoleRequest request) throws ValueNotExistException {
+        String email = request.getUsername();
+        Optional<User> user = userRepository.findByEmail(email);
+
+        if (user.isPresent()) {
+            user.get().setRole(Role.valueOf(request.getChangeRole()));
+            userRepository.save(user.get());
+            return "Role changed successfully";
+        }else {
+            throw new ValueNotExistException("User: "+email+ " not found");
+        }
     }
 }

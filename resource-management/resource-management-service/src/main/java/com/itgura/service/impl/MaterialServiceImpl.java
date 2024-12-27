@@ -10,6 +10,7 @@ import com.itgura.repository.MaterialRepository;
 import com.itgura.repository.MaterialTypeRepository;
 import com.itgura.repository.SessionRepository;
 import com.itgura.request.MaterialRequest;
+import com.itgura.request.SignedUrlRequest;
 import com.itgura.request.dto.UserResponseDto;
 import com.itgura.response.dto.MaterialResponseDto;
 import com.itgura.response.dto.SessionResponseDto;
@@ -20,14 +21,25 @@ import com.itgura.service.UserDetailService;
 import com.itgura.util.UserUtil;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.ForbiddenException;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ResourceUtils;
 
 import javax.security.auth.login.CredentialNotFoundException;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.security.PrivateKey;
+import java.security.Signature;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.time.Instant;
+import java.util.*;
+
+
+
+
 
 @Service
 public class MaterialServiceImpl implements MaterialService {
@@ -39,6 +51,16 @@ public class MaterialServiceImpl implements MaterialService {
     private MaterialTypeRepository materialTypeRepository;
     @Autowired
     private MaterialRepository materialRepository;
+
+    @Value("${cloudfront.domain}")
+    private String cloudFrontDomain;
+
+    @Value("${cloudfront.keyPairId}")
+    private String keyPairId;
+
+    @Value("${cloudfront.privateKeyPath}")
+    private String privateKeyPath;
+
 
 
     @Override
@@ -130,6 +152,49 @@ public class MaterialServiceImpl implements MaterialService {
             throw new RuntimeException(e);
         }
 
+    }
+    // Generate signed url for video material
+    @Override
+    public String getVideoMaterialSignedUrl(SignedUrlRequest signedUrlRequest) throws Exception {
+
+        long expirationTime = Instant.now().getEpochSecond() + (signedUrlRequest.getExpiresInHours() * 3600L);
+
+        // Define policy with IP restriction and expiration time
+        String policy = String.format(
+                "{\"Statement\":[{\"Resource\":\"%s/%s\",\"Condition\":{\"DateLessThan\":{\"AWS:EpochTime\":%d},\"IpAddress\":{\"AWS:SourceIp\":\"%s\"}}}]}",
+                cloudFrontDomain, signedUrlRequest.getFilePath(), expirationTime, signedUrlRequest.getUserIpAddress());
+        // Base64 encode the policy
+        String base64EncodedPolicy = Base64.getEncoder().encodeToString(policy.getBytes());
+
+        // Sign the policy with the private key
+        String signature = signPolicyWithPrivateKey(base64EncodedPolicy);
+
+
+        // Construct the signed URL
+        return String.format("%s/%s?Policy=%s&Signature=%s&Key-Pair-Id=%s",
+                cloudFrontDomain, signedUrlRequest.getFilePath(),
+                urlEncode(base64EncodedPolicy),
+                urlEncode(signature),
+                keyPairId);
+
+    }
+
+    private String signPolicyWithPrivateKey(String base64EncodedPolicy) throws Exception {
+        byte[] privateKeyBytes = Files.readAllBytes(Paths.get(privateKeyPath));
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(privateKeyBytes);
+        PrivateKey privateKey = java.security.KeyFactory.getInstance("RSA").generatePrivate(keySpec);
+
+        Signature signature = Signature.getInstance("SHA1withRSA");
+        signature.initSign(privateKey);
+        signature.update(base64EncodedPolicy.getBytes());
+        byte[] signedBytes = signature.sign();
+
+        return Base64.getEncoder().encodeToString(signedBytes);
+    }
+
+
+    private String urlEncode(String value) {
+        return value.replace("+", "-").replace("=", "_").replace("/", "~");
     }
 
 //    @Override

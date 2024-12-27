@@ -3,6 +3,7 @@ package com.itgura.controller;
 import com.itgura.dto.AppRequest;
 import com.itgura.dto.AppResponse;
 import com.itgura.request.MaterialRequest;
+import com.itgura.request.SignedUrlRequest;
 import com.itgura.service.MaterialService;
 import com.itgura.util.ResourceManagementURI;
 import com.itgura.util.URIPathVariable;
@@ -48,6 +49,18 @@ public class MaterialController {
             return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");
         }
     }
+
+    @GetMapping(ResourceManagementURI.MATERIAL + URIPrefix.GET_VIDEO_Signed_Url)
+   public AppResponse<String> getVideoMaterialSignedUrl(@RequestBody AppRequest<SignedUrlRequest> request) {
+        try {
+            String s = materialService.getVideoMaterialSignedUrl(request.getData());
+            return AppResponse.ok(s);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");
+        }
+   }
+
 
 
 }

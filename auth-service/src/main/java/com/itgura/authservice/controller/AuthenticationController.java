@@ -69,8 +69,8 @@ public class AuthenticationController {
 
     //ToDo: Remove this endpoint after testing
 
-    @PostMapping("/changeUserRole")
-    public AppResponse<String> changeUserRole(@RequestBody changeRoleRequest role) {
+    @PostMapping("/changeUserRoleTemp/{role}")
+    public AppResponse<String> changeUserRoleTemp(@PathVariable String role) {
         {
             try {
                 return AppResponse.ok(authenticationService.changeUserRole(role));

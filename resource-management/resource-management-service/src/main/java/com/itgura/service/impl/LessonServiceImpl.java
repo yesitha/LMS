@@ -16,8 +16,10 @@ import com.itgura.service.UserDetailService;
 import com.itgura.util.UserUtil;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.ForbiddenException;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.security.auth.login.CredentialNotFoundException;
 import java.util.*;
@@ -34,7 +36,7 @@ public class LessonServiceImpl implements LessonService {
 
     @Override
     @Transactional
-    public String saveLesson(LessonRequest request) throws ValueNotExistException {
+    public String saveLesson(LessonRequest request, MultipartFile file) throws ValueNotExistException {
         try {
             UserResponseDto loggedUserDetails = userDetailService.getLoggedUserDetails(UserUtil.extractToken());
             if(loggedUserDetails == null){
@@ -64,6 +66,18 @@ public class LessonServiceImpl implements LessonService {
                 lesson.setCreatedBy(userId);
                 lesson.setLastModifiedBy(userId);
                 lesson.setContentAccessType(request.getContentAccesstype());
+
+                if (file != null) {
+
+
+                String ext = Objects.requireNonNull(file.getOriginalFilename()).substring(file.getOriginalFilename().lastIndexOf('.') + 1).toLowerCase();
+                if (ext.equals("jpeg") || ext.equals("jpe") || ext.equals("jpg") || ext.equals("png") || ext.equals("gif")) {
+                    byte[] content = file.getBytes();
+                    lesson.setImage(ArrayUtils.toObject(content));
+                }
+            }else{
+                    System.out.println("Image File is null");
+                }
                 lessonRepository.save(lesson);
                 return "Lesson saved successfully";
             }
@@ -74,7 +88,7 @@ public class LessonServiceImpl implements LessonService {
 
     @Override
     @Transactional
-    public String updateLesson(LessonRequest request, UUID id) throws ValueNotExistException {
+    public String updateLesson(LessonRequest request, UUID id,MultipartFile file) throws ValueNotExistException {
         try{
             UserResponseDto loggedUserDetails = userDetailService.getLoggedUserDetails(UserUtil.extractToken());
             if(loggedUserDetails == null){
@@ -114,6 +128,15 @@ public class LessonServiceImpl implements LessonService {
                 }
                 if (request.getContentAccesstype() != null) {
                     lesson.setContentAccessType(request.getContentAccesstype());
+                }
+                if(file!= null){
+
+                    String ext = Objects.requireNonNull(file.getOriginalFilename()).substring(file.getOriginalFilename().lastIndexOf('.') + 1).toLowerCase();
+                    if (ext.equals("jpeg") || ext.equals("jpe") || ext.equals("jpg") || ext.equals("png") || ext.equals("gif")) {
+                        byte[] content = file.getBytes();
+
+                        lesson.setImage(ArrayUtils.toObject(content));
+                    }
                 }
                 if (request.getClassId() != null) {
                     Optional<AClass> classOptional = classRepository.findById(request.getClassId());
