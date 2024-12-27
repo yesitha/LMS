@@ -11,6 +11,7 @@ import com.itgura.util.URIPathVariable;
 import com.itgura.util.URIPrefix;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -21,11 +22,11 @@ import java.util.UUID;
 public class LessonController {
     @Autowired
     private LessonService lessonService;
-    @PostMapping(ResourceManagementURI.LESSON + URIPrefix.CREATE)
-    public AppResponse<String> createLesson(@RequestBody AppRequest<LessonRequest> request) {
+    @PostMapping(value = ResourceManagementURI.LESSON + URIPrefix.CREATE, consumes = "multipart/form-data")
+    public AppResponse<String> createLesson(@RequestPart("request")AppRequest<LessonRequest> request,@RequestPart (value = "image", required = false) MultipartFile file) {
 
         try {
-            String s = lessonService.saveLesson( request.getData());
+            String s = lessonService.saveLesson( request.getData(), file);
             return AppResponse.ok(s);
         } catch (ValueNotExistException e) {
             return AppResponse.error(null, e.getMessage(), "Value Not Found", "404", "");
@@ -33,10 +34,10 @@ public class LessonController {
             return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");
         }
     }
-    @PatchMapping(ResourceManagementURI.LESSON + URIPrefix.UPDATE+ URIPrefix.ID)
-    public AppResponse<String> updateLesson(@RequestBody AppRequest<LessonRequest> request, @PathVariable UUID id){
+    @PatchMapping(value=ResourceManagementURI.LESSON + URIPrefix.UPDATE+ URIPrefix.ID, consumes = "multipart/form-data")
+    public AppResponse<String> updateLesson(@RequestPart("request") AppRequest<LessonRequest> request, @PathVariable UUID id,@RequestPart (value = "image", required = false) MultipartFile file){
         try {
-            String s = lessonService.updateLesson(request.getData(), id);
+            String s = lessonService.updateLesson(request.getData(), id, file);
             return AppResponse.ok(s);
         } catch (ValueNotExistException e) {
             return AppResponse.error(null, e.getMessage(), "Value Not Found", "404", "");

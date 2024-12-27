@@ -21,6 +21,7 @@ import com.itgura.service.UserDetailService;
 import com.itgura.util.UserUtil;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.ForbiddenException;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -29,13 +30,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 
@@ -71,7 +70,7 @@ public class ClassServiceImpl implements ClassService {
 
     @Override
     @Transactional
-    public String create(ClassRequest request) throws ValueNotExistException {
+    public String create(ClassRequest request,MultipartFile file) throws ValueNotExistException {
         try {
             UserResponseDto loggedUserDetails = userDetailService.getLoggedUserDetails(UserUtil.extractToken());
             if(loggedUserDetails == null){
@@ -91,6 +90,16 @@ public class ClassServiceImpl implements ClassService {
             aClass.setLastModifiedOn(new Date(System.currentTimeMillis()));
             aClass.setLastModifiedBy(userId);
             aClass.setContentAccessType(request.getContentAccesstype());
+
+            if (file!=null) {
+
+
+                String ext = Objects.requireNonNull(file.getOriginalFilename()).substring(file.getOriginalFilename().lastIndexOf('.') + 1).toLowerCase();
+                if (ext.equals("jpeg") || ext.equals("jpe") || ext.equals("jpg") || ext.equals("png") || ext.equals("gif")) {
+                    byte[] content = file.getBytes();
+                    aClass.setImage(ArrayUtils.toObject(content));
+                }
+            }
             classRepository.save(aClass);
 
 
@@ -102,7 +111,7 @@ public class ClassServiceImpl implements ClassService {
 
     @Override
     @Transactional
-    public String update(UUID classId, ClassRequest request) throws ValueNotExistException {
+    public String update(UUID classId, ClassRequest request,MultipartFile file) throws ValueNotExistException {
         try{
             UserResponseDto loggedUserDetails = userDetailService.getLoggedUserDetails(UserUtil.extractToken());
             if(loggedUserDetails == null){
@@ -121,6 +130,16 @@ public class ClassServiceImpl implements ClassService {
                 aClass.setContentAccessType(request.getContentAccesstype());
                 aClass.setLastModifiedOn(new Date(System.currentTimeMillis()));
                 aClass.setLastModifiedBy(userId);
+
+                if (file != null) {
+
+
+                    String ext = Objects.requireNonNull(file.getOriginalFilename()).substring(file.getOriginalFilename().lastIndexOf('.') + 1).toLowerCase();
+                    if (ext.equals("jpeg") || ext.equals("jpe") || ext.equals("jpg") || ext.equals("png") || ext.equals("gif")) {
+                        byte[] content = file.getBytes();
+                        aClass.setImage(ArrayUtils.toObject(content));
+                    }
+                }
                 classRepository.save(aClass);
                 return "Class updated successfully";
             }

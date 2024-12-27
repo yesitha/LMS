@@ -43,6 +43,9 @@ public class Content {
     private List<ContentTag> contentTagList;
     @Enumerated(EnumType.STRING)
     private ContentAccessType contentAccessType;
+    @Lob
+    @Column(name = "image")
+    private Byte[] image;
 
 
 }

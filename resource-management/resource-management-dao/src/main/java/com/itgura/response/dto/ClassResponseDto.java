@@ -22,5 +22,7 @@ public class ClassResponseDto {
     private String className;
     @JsonProperty("content_access_type")
     private ContentAccessType contentAccesstype;
+    @JsonProperty("image")
+    private String image;
 
 }
