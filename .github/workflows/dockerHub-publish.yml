@@ -43,6 +43,7 @@ jobs:
             CREATE SCHEMA resource_management;
             CREATE SCHEMA payment_service;
             CREATE SCHEMA auth_service;
+            CREATE SCHEMA quiz_management;
           EOSQL
         env:
           PGPASSWORD: root
