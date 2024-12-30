@@ -10,7 +10,7 @@ public class ResourceManagementURI {
     public static final String test = "/test";
     public static final String INMONTHANDCLASS = "/in-month-and-class";
     public static final String MATERIAL_TYPE = "/material-type";
-    public static final String MATERIAL = "/material-type";
+    public static final String MATERIAL = "/material";
     public static final String SESSION_ID = "/{sessionId}";
     public static final String MATERIAL_ID = "/{materialId}";
     public static final String CLASS_ID = "/{classId}";

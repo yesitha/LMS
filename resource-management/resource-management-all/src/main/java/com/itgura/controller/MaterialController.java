@@ -50,7 +50,7 @@ public class MaterialController {
         }
     }
 
-    @GetMapping(ResourceManagementURI.MATERIAL + URIPrefix.GET_VIDEO_Signed_Url)
+    @PostMapping (ResourceManagementURI.MATERIAL + URIPrefix.GET_VIDEO_Signed_Url)
    public AppResponse<String> getVideoMaterialSignedUrl(@RequestBody AppRequest<SignedUrlRequest> request) {
         try {
             String s = materialService.getVideoMaterialSignedUrl(request.getData());
