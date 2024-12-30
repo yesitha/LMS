@@ -12,29 +12,33 @@ import com.itgura.repository.SessionRepository;
 import com.itgura.request.MaterialRequest;
 import com.itgura.request.SignedUrlRequest;
 import com.itgura.request.dto.UserResponseDto;
-import com.itgura.response.dto.MaterialResponseDto;
-import com.itgura.response.dto.SessionResponseDto;
-import com.itgura.response.dto.mapper.MaterialMapper;
-import com.itgura.response.dto.mapper.SessionMapper;
 import com.itgura.service.MaterialService;
 import com.itgura.service.UserDetailService;
 import com.itgura.util.UserUtil;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.ForbiddenException;
 
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ResourceUtils;
+import software.amazon.awssdk.services.cloudfront.CloudFrontUtilities;
+import software.amazon.awssdk.services.cloudfront.internal.utils.SigningUtils;
+import software.amazon.awssdk.services.cloudfront.model.CannedSignerRequest;
+import software.amazon.awssdk.services.cloudfront.model.CustomSignerRequest;
+import software.amazon.awssdk.services.cloudfront.url.SignedUrl;
 
 import javax.security.auth.login.CredentialNotFoundException;
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.KeyFactory;
 import java.security.PrivateKey;
+import java.security.Security;
 import java.security.Signature;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 
@@ -157,34 +161,76 @@ public class MaterialServiceImpl implements MaterialService {
     @Override
     public String getVideoMaterialSignedUrl(SignedUrlRequest signedUrlRequest) throws Exception {
 
-        long expirationTime = Instant.now().getEpochSecond() + (signedUrlRequest.getExpiresInHours() * 3600L);
-
-        // Define policy with IP restriction and expiration time
-        String policy = String.format(
-                "{\"Statement\":[{\"Resource\":\"%s/%s\",\"Condition\":{\"DateLessThan\":{\"AWS:EpochTime\":%d},\"IpAddress\":{\"AWS:SourceIp\":\"%s\"}}}]}",
-                cloudFrontDomain, signedUrlRequest.getFilePath(), expirationTime, signedUrlRequest.getUserIpAddress());
-        // Base64 encode the policy
-        String base64EncodedPolicy = Base64.getEncoder().encodeToString(policy.getBytes());
-
-        // Sign the policy with the private key
-        String signature = signPolicyWithPrivateKey(base64EncodedPolicy);
+        CloudFrontUtilities cloudFrontUtilities = CloudFrontUtilities.create();
+        Instant expirationDate = Instant.ofEpochSecond(Instant.now().getEpochSecond() + (signedUrlRequest.getExpiresInHours() * 3600L));
 
 
-        // Construct the signed URL
-        return String.format("%s/%s?Policy=%s&Signature=%s&Key-Pair-Id=%s",
-                cloudFrontDomain, signedUrlRequest.getFilePath(),
-                urlEncode(base64EncodedPolicy),
-                urlEncode(signature),
-                keyPairId);
+        CustomSignerRequest customSignerRequest = CustomSignerRequest.builder()
+                .resourceUrl(cloudFrontDomain + "/" + signedUrlRequest.getFilePath())
+                .expirationDate(expirationDate)
+                .ipRange(signedUrlRequest.getUserIpAddress())
+                .keyPairId(keyPairId)
+                .privateKey(new ClassPathResource(privateKeyPath).getFile().toPath())
+                .build();
+        SignedUrl signedUrl = cloudFrontUtilities.getSignedUrlWithCustomPolicy(customSignerRequest);
+        return signedUrl.url();
+
+
+
+//        long expirationTime = Instant.now().getEpochSecond() + (signedUrlRequest.getExpiresInHours() * 3600L);
+//
+//       //  Define policy with IP restriction and expiration time
+//        String policy = String.format(
+//                "{\"Statement\":[{\"Resource\":\"%s/%s\",\"Condition\":{\"DateLessThan\":{\"AWS:EpochTime\":%d},\"IpAddress\":{\"AWS:SourceIp\":\"%s\"}}}]}",
+//                cloudFrontDomain, signedUrlRequest.getFilePath(), expirationTime, signedUrlRequest.getUserIpAddress());
+//
+////        String policy = String.format(
+////                "{\"Statement\":[{\"Resource\":\"%s/%s\"}]}",
+////                cloudFrontDomain, signedUrlRequest.getFilePath());
+//        System.out.println("policy: "+policy);
+//        // Base64 encode the policy
+//        String base64EncodedPolicy = Base64.getEncoder().encodeToString(policy.getBytes());
+//
+//        String decodedPolicy = new String(Base64.getDecoder().decode(base64EncodedPolicy));
+//        System.out.println("Decoded Policy: " + decodedPolicy);
+//
+//        // Sign the policy with the private key
+//        String signature = signPolicyWithPrivateKey(base64EncodedPolicy);
+//        System.out.println("Signature: "+signature);
+//
+//
+//        // Construct the signed URL
+//        return String.format("%s/%s?Policy=%s&Signature=%s&Key-Pair-Id=%s",
+//                cloudFrontDomain, signedUrlRequest.getFilePath(),
+//                urlEncode(base64EncodedPolicy),
+//                urlEncode(signature),
+//                keyPairId);
 
     }
 
     private String signPolicyWithPrivateKey(String base64EncodedPolicy) throws Exception {
-        byte[] privateKeyBytes = Files.readAllBytes(Paths.get(privateKeyPath));
-        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(privateKeyBytes);
-        PrivateKey privateKey = java.security.KeyFactory.getInstance("RSA").generatePrivate(keySpec);
+        // Add the Bouncy Castle provider
+        Security.addProvider(new BouncyCastleProvider());
 
-        Signature signature = Signature.getInstance("SHA1withRSA");
+        ClassPathResource resource = new ClassPathResource(privateKeyPath);
+        byte[] privateKeyBytes = Files.readAllBytes(resource.getFile().toPath());
+
+//        // Convert to string and strip PEM markers
+//        String privateKeyContent = new String(privateKeyBytes);
+//        privateKeyContent = privateKeyContent
+//                .replace("-----BEGIN PRIVATE KEY-----", "")
+//                .replace("-----END PRIVATE KEY-----", "")
+//                .replaceAll("\\s+", ""); // Remove all whitespace
+//
+//        // Decode Base64 content
+//        byte[] decodedKey = Base64.getDecoder().decode(privateKeyContent);
+
+
+        // Generate the private key
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(privateKeyBytes);
+        PrivateKey privateKey = KeyFactory.getInstance("RSA").generatePrivate(keySpec);
+
+        Signature signature = Signature.getInstance("SHA256withRSA");
         signature.initSign(privateKey);
         signature.update(base64EncodedPolicy.getBytes());
         byte[] signedBytes = signature.sign();
@@ -194,6 +240,7 @@ public class MaterialServiceImpl implements MaterialService {
 
 
     private String urlEncode(String value) {
+
         return value.replace("+", "-").replace("=", "_").replace("/", "~");
     }
 
@@ -227,4 +274,41 @@ public class MaterialServiceImpl implements MaterialService {
 //
 //        }
 //    }
+
+
+
+    public String generateCustomSignedUrl(String resourcePath, Instant activeDate, Instant expirationDate, String ipAddress) throws Exception {
+        // Load private key
+        PrivateKey privateKey = loadPrivateKey();
+
+        // Build custom policy
+        String resourceUrl = cloudFrontDomain + "/" + resourcePath;
+        String customPolicy = SigningUtils.buildCustomPolicyForSignedUrl(resourceUrl, activeDate, expirationDate, ipAddress);
+        System.out.println("Custom Policy: " + customPolicy);
+
+        // Sign the policy
+        byte[] signatureBytes = SigningUtils.signWithSha1Rsa(customPolicy.getBytes(), privateKey);
+        String urlSafeSignature = SigningUtils.makeBytesUrlSafe(signatureBytes);
+
+        // Base64 encode the policy
+        String base64EncodedPolicy = Base64.getEncoder().encodeToString(customPolicy.getBytes());
+
+        // Construct the signed URL
+        return String.format("%s/%s?Policy=%s&Signature=%s&Key-Pair-Id=%s",
+                cloudFrontDomain,
+                resourcePath,
+                urlSafeEncode(base64EncodedPolicy),
+                urlSafeSignature,
+                keyPairId);
+    }
+
+    private PrivateKey loadPrivateKey() throws Exception {
+        byte[] privateKeyBytes = Files.readAllBytes(Paths.get(privateKeyPath));
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(privateKeyBytes);
+        return KeyFactory.getInstance("RSA").generatePrivate(keySpec);
+    }
+
+    private String urlSafeEncode(String value) {
+        return value.replace("+", "-").replace("=", "_").replace("/", "~");
+    }
 }
