@@ -1,9 +1,13 @@
 package com.itgura.service.impl;
 
 import com.itgura.entity.Assignment;
+import com.itgura.entity.AssignmentSubmission;
 import com.itgura.repository.AssignmentRepository;
+import com.itgura.repository.AssignmentSubmissionRepository;
+import com.itgura.request.AssignmentSubmissionRequest;
 import com.itgura.request.CreateAssignmentRequest;
 import com.itgura.response.AssignmentResponse;
+import com.itgura.response.AssignmentSubmissionDTO;
 import com.itgura.response.AssignmentSummaryDTO;
 import com.itgura.service.AssignmentService;
 import jakarta.transaction.Transactional;
@@ -19,7 +23,52 @@ import java.util.stream.Collectors;
 @Service
 public class AssignmentServiceImpl implements AssignmentService {
     @Autowired
+    private AssignmentSubmissionRepository assignmentSubmissionRepository;
+    @Autowired
     private AssignmentRepository assignmentRepository;
+    @Override
+    @Transactional
+    public boolean submitAssignmentAnswer(UUID assignmentId, UUID studentId, AssignmentSubmissionRequest request) {
+        Optional<Assignment> optionalAssignment = assignmentRepository.findById(assignmentId);
+        if (optionalAssignment.isEmpty()) {
+            throw new RuntimeException("Assignment not found with id: " + assignmentId);
+        }
+        Assignment assignment = optionalAssignment.get();
+        if (!assignment.getIsPublished()) {
+            throw new RuntimeException("Assignment is not published.");
+        }
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+        if (assignment.getDeadline() != null && now.after(assignment.getDeadline())) {
+            throw new RuntimeException("Submission deadline has passed.");
+        }
+        AssignmentSubmission submission = new AssignmentSubmission();
+        submission.setAssignment(assignment);
+        submission.setStudentId(studentId);
+        submission.setFileUrl(request.getFileUrl());
+        submission.setCreatedBy(studentId);
+        submission.setCreatedAt(now);
+        submission.setSubmittedAt(now);
+        assignmentSubmissionRepository.save(submission);
+        return true;
+    }
+    @Override
+    @Transactional
+    public List<AssignmentSubmissionDTO> getAllSubmissions(UUID assignmentId) {
+        // Fetch submissions by assignmentId from the repository
+        List<AssignmentSubmission> submissions = assignmentSubmissionRepository.findByAssignmentId(assignmentId);
+        // Convert entities to DTOs
+        return submissions.stream().map(submission -> {
+            AssignmentSubmissionDTO dto = new AssignmentSubmissionDTO();
+            dto.setId(submission.getId());
+            dto.setAssignmentId(submission.getAssignment().getId());
+            dto.setStudentId(submission.getStudentId());
+            dto.setFileUrl(submission.getFileUrl().toString());
+            dto.setSubmittedAt(submission.getSubmittedAt());
+            dto.setCreatedAt(submission.getCreatedAt());
+            dto.setUpdatedAt(submission.getUpdatedAt());
+            return dto;
+        }).collect(Collectors.toList());
+    }
     @Override
     @Transactional
     public String createAssignment(CreateAssignmentRequest request) {

@@ -1,11 +1,15 @@
 package com.itgura.service.impl;
 
 import com.itgura.entity.*;
+import com.itgura.exception.ValueNotFoundException;
 import com.itgura.repository.QuestionRepository;
 import com.itgura.repository.QuizRepository;
 import com.itgura.repository.AssignmentRepository;
+import com.itgura.repository.QuizSubmissionRepository;
 import com.itgura.request.CreateQuizRequest;
 import com.itgura.request.CreateAssignmentRequest;
+import com.itgura.request.QuestionAnswerDTO;
+import com.itgura.request.QuizSubmissionRequest;
 import com.itgura.response.*;
 import com.itgura.service.QuizService;
 import jakarta.transaction.Transactional;
@@ -13,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -26,7 +31,8 @@ public class QuizServiceImpl implements QuizService {
 
     @Autowired
     private QuestionRepository questionRepository;
-
+    @Autowired
+    private QuizSubmissionRepository quizSubmissionRepository;
 
 
     @Override
@@ -190,6 +196,38 @@ public class QuizServiceImpl implements QuizService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    @Transactional
+    public boolean answerToQuiz(QuizSubmissionRequest request) throws ValueNotFoundException {
+        // Step 1: Fetch the quiz and student details
+        Quiz quiz = quizRepository.findById(request.getQuizId())
+                .orElseThrow(() -> new ValueNotFoundException("Quiz not found"));
+        // Step 2: Create a new QuizSubmission entity
+        QuizSubmission quizSubmission = new QuizSubmission();
+        quizSubmission.setQuiz(quiz);
+        quizSubmission.setStudentId(request.getStudentId());
+        quizSubmission.setSubmittedAt(new Timestamp(System.currentTimeMillis()));
+        List<QuestionAnswer> answers = new ArrayList<>();
+        // Step 3: Process each answer submitted
+        for (QuestionAnswerDTO answerDTO : request.getAnswers()) {
+            Question question = questionRepository.findById(answerDTO.getQuestionId())
+                    .orElseThrow(() -> new ValueNotFoundException("Question not found"));
+            QuestionAnswer questionAnswer = new QuestionAnswer();
+            questionAnswer.setQuestion(question);
+            questionAnswer.setQuizSubmission(quizSubmission);
+            questionAnswer.setStudentId(request.getStudentId());
+            questionAnswer.setAnswerText(answerDTO.getAnswerText());
+            questionAnswer.setFileUrl(answerDTO.getFileUrl());
+            questionAnswer.setSubmittedAt(new Timestamp(System.currentTimeMillis()));
+            // Add to the answers list
+            answers.add(questionAnswer);
+        }
+        // Step 4: Save the quiz submission and answers
+        quizSubmission.setAnswers(answers);
+        quizSubmissionRepository.save(quizSubmission);
+        return true; // Indicate successful submission
     }
 
 }

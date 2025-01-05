@@ -2,8 +2,10 @@ package com.itgura.controller;
 
 import com.itgura.dto.AppRequest;
 import com.itgura.dto.AppResponse;
+import com.itgura.request.AssignmentSubmissionRequest;
 import com.itgura.request.CreateAssignmentRequest;
 import com.itgura.response.AssignmentResponse;
+import com.itgura.response.AssignmentSubmissionDTO;
 import com.itgura.response.AssignmentSummaryDTO;
 import com.itgura.service.AssignmentService;
 import com.itgura.util.ResourceManagementURI;
@@ -69,7 +71,7 @@ public class AssignmentController {
             return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");
         }
     }
-
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_TEACHER')")
     @PatchMapping(ResourceManagementURI.ASSIGNMENT+ResourceManagementURI.ID+ResourceManagementURI.PUBLISH)
     public ResponseEntity<String> updateAssignmentPublishedStatus(@PathVariable UUID id, @RequestParam Boolean isPublished) {
         try {
@@ -81,6 +83,25 @@ public class AssignmentController {
             }
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Error updating assignment published status: " + e.getMessage());
+        }
+    }
+    @PostMapping(ResourceManagementURI.ASSIGNMENT + ResourceManagementURI.ANSWERTOASSIGNMENT + ResourceManagementURI.ASSIGNMENT_ID+ResourceManagementURI.STUDENT_ID)
+    public AppResponse<Boolean> answerToAssignment(@PathVariable UUID assignmentId,@PathVariable UUID studentId, @RequestBody AppRequest<AssignmentSubmissionRequest> request) {
+        try {
+            Boolean b = this.assignmentService.submitAssignmentAnswer(assignmentId, studentId, request.getData());
+            return AppResponse.ok(b);
+        } catch (Exception e) {
+            return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");
+        }
+    }
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_TEACHER')")
+    @GetMapping(ResourceManagementURI.ASSIGNMENT +ResourceManagementURI.ASSIGNMENT_ID+ResourceManagementURI.GET_ALL_SUBMISSIONS)
+    public AppResponse<List<AssignmentSubmissionDTO> > getAllAnswers(@PathVariable UUID assignmentId) {
+        try {
+            List<AssignmentSubmissionDTO> allSubmissions = this.assignmentService.getAllSubmissions(assignmentId);
+            return AppResponse.ok(allSubmissions);
+        } catch (Exception e) {
+            return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");
         }
     }
 
