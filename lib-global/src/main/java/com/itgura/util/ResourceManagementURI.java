@@ -27,4 +27,9 @@ public class ResourceManagementURI {
     public static final String REPLY = "/reply";
     public static final String GET_BY_ID = "/get-by-id";
     public static final String PUBLISH = "/publish";
+    public static final String ANSWERTOASSIGNMENT = "/answer-to-assignment";
+    public static final String ASSIGNMENT_ID = "/{assignmentId}";
+    public static final String GET_ALL_SUBMISSIONS = "/get-all-submissions";
+    public static final String STUDENT_ID = "/{studentId}";
+    public static final String ANSWERTOQUIZ = "/answer-to-quiz";
 }
