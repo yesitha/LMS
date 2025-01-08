@@ -21,6 +21,8 @@ public class Student {
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "student_id")
     private UUID studentId;
+    @Column(name = "user_id",unique = true)
+    private UUID userId;
     @Column(name = "registration_number")
     private Integer registration_number;
     @Column(name = "first_name")
