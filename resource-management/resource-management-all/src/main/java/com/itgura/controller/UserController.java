@@ -1,4 +1,5 @@
 package com.itgura.controller;
+
 import com.itgura.dto.AppResponse;
 import com.itgura.exception.ValueNotExistException;
 import com.itgura.request.UserDetailRequest;
@@ -9,8 +10,10 @@ import com.itgura.util.URIPathVariable;
 import com.itgura.util.URIPrefix;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.web.bind.annotation.*;
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+
+
 @RestController
 @RequestMapping(URIPrefix.API + URIPrefix.V1 + URIPathVariable.RESOURCE_MANAGEMENT)
 public class UserController {
@@ -22,7 +25,7 @@ public class UserController {
             UserDetailsResponse response = userService.findUser();
             return AppResponse.ok(response);
         }
-
+            
         catch (Exception e) {
             return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");
         }

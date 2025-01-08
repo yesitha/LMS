@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+
 @RestController
 @RequestMapping(URIPrefix.API + URIPrefix.V1 + URIPathVariable.QUIZ_SERVICE)
 public class AssignmentController {
@@ -71,6 +71,7 @@ public class AssignmentController {
             return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");
         }
     }
+
     @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_TEACHER')")
     @PatchMapping(ResourceManagementURI.ASSIGNMENT+ResourceManagementURI.ID+ResourceManagementURI.PUBLISH)
     public ResponseEntity<String> updateAssignmentPublishedStatus(@PathVariable UUID id, @RequestParam Boolean isPublished) {

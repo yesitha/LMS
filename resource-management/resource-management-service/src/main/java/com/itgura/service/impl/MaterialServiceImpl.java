@@ -172,6 +172,8 @@ public class MaterialServiceImpl implements MaterialService {
                 .keyPairId(keyPairId)
                 .privateKey(new ClassPathResource(privateKeyPath).getFile().toPath())
                 .build();
+
+
         SignedUrl signedUrl = cloudFrontUtilities.getSignedUrlWithCustomPolicy(customSignerRequest);
         return signedUrl.url();
 

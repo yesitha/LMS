@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+
 @RequestMapping("api/v1/auth-service-protected/student")
 @RequiredArgsConstructor
 
