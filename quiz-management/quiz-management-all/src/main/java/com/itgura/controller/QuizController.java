@@ -2,7 +2,6 @@ package com.itgura.controller;
 
 import com.itgura.dto.AppRequest;
 import com.itgura.dto.AppResponse;
-import com.itgura.request.CreateAssignmentRequest;
 import com.itgura.request.CreateQuizRequest;
 import com.itgura.request.QuizSubmissionRequest;
 import com.itgura.response.QuizResponse;
@@ -18,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+
 @RestController
 @RequestMapping(URIPrefix.API + URIPrefix.V1 + URIPathVariable.QUIZ_SERVICE)
 public class QuizController {
