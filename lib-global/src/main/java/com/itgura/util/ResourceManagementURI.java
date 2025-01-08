@@ -32,4 +32,5 @@ public class ResourceManagementURI {
     public static final String GET_ALL_SUBMISSIONS = "/get-all-submissions";
     public static final String STUDENT_ID = "/{studentId}";
     public static final String ANSWERTOQUIZ = "/answer-to-quiz";
+    public static final String USER_DETAILS = "/user-details";
 }
