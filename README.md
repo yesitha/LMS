@@ -1,7 +1,8 @@
 # Learning Management System (LMS)
 ## Overview
+
 The LMS project is a **microservices-based application** designed to streamline learning and course management. It integrates various tools and technologies to ensure scalability, security, and efficiency.
----
+
 
 ## Features
 
@@ -17,7 +18,7 @@ The LMS project is a **microservices-based application** designed to streamline 
   - Docker images are created using the **Maven Jib plugin**.  
   - **GitHub Actions** automate Docker image creation and push to DockerHub.
 - **Orchestration:** Configured with a Docker Compose file to simplify project setup and deployment.
- ---
+
  
 ## Architecture
 
@@ -25,7 +26,7 @@ This project employs a microservices architecture with the following components:
 - **Eureka Server:** Centralized service registry for microservices.  
 - **Spring Gateway:** Handles routing and authentication.  
 - **Multiple Microservices:** Each handles specific functionalities, ensuring modularity and scalability.
----
+
 
 ## Technologies Used
 
