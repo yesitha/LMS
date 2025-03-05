@@ -26,8 +26,13 @@ public class AuthenticationController {
         try {
             AuthenticationResponse res = authenticationService.register(registerRequest);
             return AppResponse.ok(res);
+        }catch(IllegalArgumentException e ){
+            return AppResponse.error(null,"Illegal Arguments","500","500",e.getMessage());
+        }catch(ApplicationException e){
+            return AppResponse.error(null,"Application Exception","500","500",e.getMessage());
+
         } catch (Exception e) {
-            return AppResponse.error(null, "Server Error", "500", "", e.getMessage());
+            return AppResponse.error(null, "Server Error", "500", "500", e.getMessage());
         }
 
     }
