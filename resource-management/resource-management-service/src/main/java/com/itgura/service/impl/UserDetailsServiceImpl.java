@@ -29,6 +29,7 @@ public class UserDetailsServiceImpl implements UserDetailService {
     private String secretKey;
     @Autowired
     private UserDao userDao;
+
     @Autowired
     private AddressRepository addressRepository;
     @Autowired
@@ -38,6 +39,7 @@ public class UserDetailsServiceImpl implements UserDetailService {
     @Override
     public UserResponseDto getLoggedUserDetails(String token) throws BadRequestRuntimeException, CredentialNotFoundException {
         String userEmail = UserUtil.getUserEmail(token, secretKey);
+
         UserResponseDto userDetailByEmail = userDao.getUserDetailByEmail(userEmail);
         return userDetailByEmail;
     }
@@ -46,62 +48,141 @@ public class UserDetailsServiceImpl implements UserDetailService {
     public UserDetailsResponse findUser() {
         try{
             UserResponseDto loggedUserDetails = getLoggedUserDetails(UserUtil.extractToken());
+            System.out.println("Extract details from token :"+loggedUserDetails);
             UUID userId = loggedUserDetails.getUserId();
+            System.out.println("Extract details from token :"+loggedUserDetails);
             Student student = studentRepository.findByUserId(userId)
                     .orElseThrow(() -> {
-                        return new ValueNotFoundException("user not found id: " + userId);
-                    });
+
+                return new ValueNotFoundException("user not found id: " + userId);
+            });
             UserDetailsResponse dto = UserDetailMapper.INSTANCE.toDto(student);
             dto.setUserRoles(loggedUserDetails.getUserRoles());
             return dto;
+
         }catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
+
     @Override
     public UserDetailsResponse registerUser(UserDetailRequest userDetailRequest) {
         try{
-            UserResponseDto loggedUserDetails = getLoggedUserDetails(UserUtil.extractToken());
-            UUID userId = loggedUserDetails.getUserId();
-            Address address = new Address();
-            address.setHouseNameOrNumber(userDetailRequest.getAddress().getHouseNameOrNumber());
-            address.setLine1(userDetailRequest.getAddress().getLine1());
-            address.setLine2(userDetailRequest.getAddress().getLine2());
-            address.setCity(userDetailRequest.getAddress().getCity());
-            Address savedAddress = addressRepository.save(address);
-            Stream stream = streamRepository.findById(userDetailRequest.getStream())
-                    .orElseThrow(() -> {
-                        return new ValueNotFoundException("stream not found id: " + userDetailRequest.getStream());
-                    });
+
             Student student = new Student();
-            student.setRegistration_number(userDetailRequest.getRegistrationNumber());
             student.setFirstName(userDetailRequest.getFirstName());
             student.setLastName(userDetailRequest.getLastName());
             student.setEmail(userDetailRequest.getEmail());
-            student.setMobileNumber(userDetailRequest.getMobileNumber());
+            student.setUserId(userDetailRequest.getUserID());
+
+            if(userDetailRequest.getAddress()!=null) {
+                Address address = new Address();
+                address.setHouseNameOrNumber(userDetailRequest.getAddress().getHouseNameOrNumber());
+                address.setLine1(userDetailRequest.getAddress().getLine1());
+                address.setLine2(userDetailRequest.getAddress().getLine2());
+                address.setCity(userDetailRequest.getAddress().getCity());
+                Address savedAddress = addressRepository.save(address);
+                student.setAddress(savedAddress);
+
+            }
+            if(userDetailRequest.getStream()!=null) {
+
+                Stream stream = streamRepository.findById(userDetailRequest.getStream())
+                        .orElseThrow(() -> {
+
+                            return new ValueNotFoundException("stream not found id: " + userDetailRequest.getStream());
+                        });
+                student.setStream(stream);
+            }
+            if(userDetailRequest.getRegistrationNumber()==0) {
+                // Fetch the maximum registration number from the database
+                Integer maxRegistrationNumber = studentRepository.findMaxRegistrationNumber();
+
+                // Increment the registration number (default to 1 if no records exist)
+                int newRegistrationNumber = (maxRegistrationNumber != null) ? maxRegistrationNumber + 1 : 1;
+
+                student.setRegistration_number(newRegistrationNumber);
+            }else {
+                student.setRegistration_number(userDetailRequest.getRegistrationNumber());
+            }
+
+
+            if(userDetailRequest.getMobileNumber()!=null) {
+                student.setMobileNumber(userDetailRequest.getMobileNumber());
+            }
+
             student.setExaminYear(userDetailRequest.getExaminationYear());
-            student.setGender(userDetailRequest.getGender());
-            student.setSchool(userDetailRequest.getSchool());
-            student.setAddress(savedAddress);
-            student.setStream(stream);
-            student.setUserId(userId);
+
+            if(userDetailRequest.getGender()!=null) {
+                student.setGender(userDetailRequest.getGender());
+            }
+            if(userDetailRequest.getSchool()!=null) {
+                student.setSchool(userDetailRequest.getSchool());
+            }
+
+            System.out.println(student);
+
             Student save = studentRepository.save(student);
             UserDetailsResponse dto = UserDetailMapper.INSTANCE.toDto(save);
-            dto.setUserRoles(loggedUserDetails.getUserRoles());
+            dto.setUserRoles("STUDENT");
             return dto;
+
         }catch (Exception e) {
+            System.out.println(e);
             throw new RuntimeException(e);
         }
     }
+
+//    private String generateRegistrationNumber() {
+//        // Step 1: Fetch the last registration number from the database
+//        String lastRegistrationNumber = studentRepository.findLastRegistrationNumber(); // Custom query
+//
+//        // Step 2: Define default starting registration number if none exists
+//        if (lastRegistrationNumber == null || lastRegistrationNumber.isEmpty()) {
+//            return "AAA1"; // Start with the first registration number
+//        }
+//
+//        // Step 3: Split the alphabetic and numeric parts
+//        String alphabetPart = lastRegistrationNumber.replaceAll("\\d", ""); // Extract letters
+//        String numericPart = lastRegistrationNumber.replaceAll("\\D", ""); // Extract numbers
+//
+//        // Step 4: Increment the numeric part
+//        int number = Integer.parseInt(numericPart) + 1;
+//
+//        // Step 5: Handle rollover of numeric part
+//        if (number > 1000) { // Define your maximum threshold
+//            number = 1; // Reset to 1
+//            alphabetPart = incrementAlphabet(alphabetPart); // Increment alphabet part
+//        }
+//
+//        // Step 6: Format the new registration number
+//        return alphabetPart + number;
+//    }
+//
+//    // Helper method to increment the alphabetic part
+//    private String incrementAlphabet(String alphabetPart) {
+//        char[] chars = alphabetPart.toCharArray();
+//        for (int i = chars.length - 1; i >= 0; i--) {
+//            if (chars[i] < 'Z') {
+//                chars[i]++;
+//                break;
+//            } else {
+//                chars[i] = 'A'; // Reset to 'A' if at 'Z'
+//            }
+//        }
+//        return new String(chars);
+//    }
     @Override
     public UserDetailsResponse updateUser(UserDetailRequest userDetailRequest) {
         try {
             // Get logged-in user's details
             UserResponseDto loggedUserDetails = getLoggedUserDetails(UserUtil.extractToken());
             UUID userId = loggedUserDetails.getUserId();
+
             // Find the existing Student record associated with the logged-in user
             Student student = studentRepository.findByUserId(userId)
                     .orElseThrow(() -> new ValueNotFoundException("User not found with ID: " + userId));
+
             // Update address if provided
             Address address = student.getAddress();
             if (userDetailRequest.getAddress() != null) {
@@ -114,12 +195,14 @@ public class UserDetailsServiceImpl implements UserDetailService {
                 address.setCity(userDetailRequest.getAddress().getCity());
                 addressRepository.save(address); // Save updated address
             }
+
             // Update stream if provided
             if (userDetailRequest.getStream() != null) {
                 Stream stream = streamRepository.findById(userDetailRequest.getStream())
                         .orElseThrow(() -> new ValueNotFoundException("Stream not found with ID: " + userDetailRequest.getStream()));
                 student.setStream(stream);
             }
+
             // Update the student's fields with new values from the request
             student.setRegistration_number(userDetailRequest.getRegistrationNumber());
             student.setFirstName(userDetailRequest.getFirstName());
@@ -130,8 +213,10 @@ public class UserDetailsServiceImpl implements UserDetailService {
             student.setGender(userDetailRequest.getGender());
             student.setSchool(userDetailRequest.getSchool());
             student.setAddress(address); // Update the associated address
+
             // Save the updated student record
             Student updatedStudent = studentRepository.save(student);
+
             // Convert updated student entity to response DTO
             UserDetailsResponse dto = UserDetailMapper.INSTANCE.toDto(updatedStudent);
             dto.setUserRoles(loggedUserDetails.getUserRoles());
@@ -140,4 +225,5 @@ public class UserDetailsServiceImpl implements UserDetailService {
             throw new RuntimeException("Failed to update user details", e);
         }
     }
+
 }
