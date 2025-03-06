@@ -4,6 +4,10 @@
 The LMS project is a **microservices-based application** designed to streamline learning and course management. It integrates various tools and technologies to ensure scalability, security, and efficiency.
 
 
+<img src="https://github.com/user-attachments/assets/976dda89-ba72-4595-86b5-29692c5207af" width="650" height="500" />
+
+
+
 ## Features
 
 - **Payment Integration:** Supports payments through [PayHere](https://www.payhere.lk/).
