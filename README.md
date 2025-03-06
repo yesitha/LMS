@@ -32,7 +32,6 @@ This project employs a microservices architecture with the following components:
 
 - Backend: Spring Boot, Spring Cloud, Eureka, Spring Gateway
 - Authentication: JWT Tokens
-- Frontend: (Optional, specify if applicable)
 - Storage: AWS S3, Nextcloud
 - Payment Gateway: PayHere
 - Containerization: Docker, Maven Jib Plugin
