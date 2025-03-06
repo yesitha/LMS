@@ -33,4 +33,5 @@ public class ResourceManagementURI {
     public static final String STUDENT_ID = "/{studentId}";
     public static final String ANSWERTOQUIZ = "/answer-to-quiz";
     public static final String USER_DETAILS = "/user-details";
+    public static final String STREAM = "/stream";
 }
