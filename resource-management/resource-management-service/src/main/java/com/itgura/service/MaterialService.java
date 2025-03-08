@@ -19,6 +19,10 @@ public interface MaterialService {
     String deleteMaterial(UUID materialId) throws ApplicationException, CredentialNotFoundException, BadRequestRuntimeException;
 
     String getVideoMaterialSignedUrl(SignedUrlRequest signedUrlRequest) throws Exception;
+
+    MaterialResponseDto getMaterialById(UUID materialId);
+
+    List<MaterialResponseDto> getAllMaterialBySessionId(UUID sessionId);
 //    MaterialResponseDto findMaterialById(UUID materialId) throws ApplicationException, CredentialNotFoundException, BadRequestRuntimeException;
 //    List<MaterialResponseDto> findAllMaterial(UUID sessionId) throws ApplicationException, CredentialNotFoundException, BadRequestRuntimeException;
 }
