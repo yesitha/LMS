@@ -4,6 +4,7 @@ import com.itgura.dto.AppRequest;
 import com.itgura.dto.AppResponse;
 import com.itgura.request.MaterialRequest;
 import com.itgura.request.SignedUrlRequest;
+import com.itgura.response.dto.MaterialResponseDto;
 import com.itgura.service.MaterialService;
 import com.itgura.util.ResourceManagementURI;
 import com.itgura.util.URIPathVariable;
@@ -12,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
-
+import java.util.List;
 
 @RestController
 @RequestMapping(URIPrefix.API + URIPrefix.V1 + URIPathVariable.RESOURCE_MANAGEMENT)
@@ -60,7 +61,26 @@ public class MaterialController {
             return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");
         }
    }
-
+    @GetMapping (ResourceManagementURI.MATERIAL + ResourceManagementURI.MATERIAL_ID)
+    public AppResponse<MaterialResponseDto> getMaterialById(@PathVariable UUID materialId) {
+        try {
+            MaterialResponseDto dto = materialService.getMaterialById(materialId);
+            return AppResponse.ok(dto);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");
+        }
+    }
+    @GetMapping (ResourceManagementURI.MATERIAL +URIPrefix.GET_ALL+ ResourceManagementURI.SESSION_ID)
+    public AppResponse<List<MaterialResponseDto>> getAllMaterialBySessionId(@PathVariable UUID sessionId) {
+        try {
+            List<MaterialResponseDto> dto = materialService.getAllMaterialBySessionId(sessionId);
+            return AppResponse.ok(dto);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");
+        }
+    }
 
 
 }
