@@ -28,4 +28,7 @@ public class URIPrefix {
     public static final String GET_PRICE = "/get-price";
     public static final String UPDATE_TAGS = "/update-tags";
     public static final String GET_VIDEO_Signed_Url = "/get-video-signed-url";
+    public static final String Upload_Video_Material = "/upload-video";
+    public static final String GET_Pre_Signed_Url_To_Upload_Video = "/get-pre-signed-url-to-upload-video";
+    public static final String MARKED_VIDEO_AS_UPLOADED = "/marked-video-as-uploaded";
 }

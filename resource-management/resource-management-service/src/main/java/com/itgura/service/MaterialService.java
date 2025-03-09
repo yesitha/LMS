@@ -1,16 +1,15 @@
 package com.itgura.service;
 
 
-import com.itgura.dto.AppRequest;
 import com.itgura.exception.ApplicationException;
 import com.itgura.exception.BadRequestRuntimeException;
 import com.itgura.exception.ValueNotExistException;
 import com.itgura.request.MaterialRequest;
 import com.itgura.request.SignedUrlRequest;
-import com.itgura.response.dto.MaterialResponseDto;
+import com.itgura.request.VideoUploadRequest;
+import com.itgura.response.dto.PreSignedUrlToUploadVideoResponseDto;
 
 import javax.security.auth.login.CredentialNotFoundException;
-import java.util.List;
 import java.util.UUID;
 
 public interface MaterialService {
@@ -20,9 +19,11 @@ public interface MaterialService {
 
     String getVideoMaterialSignedUrl(SignedUrlRequest signedUrlRequest) throws Exception;
 
-    MaterialResponseDto getMaterialById(UUID materialId);
+    PreSignedUrlToUploadVideoResponseDto getPreSignedUrlToUploadVideo(VideoUploadRequest videoUploadRequest) throws ValueNotExistException,RuntimeException, ApplicationException;
 
-    List<MaterialResponseDto> getAllMaterialBySessionId(UUID sessionId);
+    String markedVideoAsUploaded(UUID uuid) throws ValueNotExistException;
+
+
 //    MaterialResponseDto findMaterialById(UUID materialId) throws ApplicationException, CredentialNotFoundException, BadRequestRuntimeException;
 //    List<MaterialResponseDto> findAllMaterial(UUID sessionId) throws ApplicationException, CredentialNotFoundException, BadRequestRuntimeException;
 }
