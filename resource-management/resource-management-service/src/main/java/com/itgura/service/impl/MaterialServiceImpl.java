@@ -304,7 +304,40 @@ public class MaterialServiceImpl implements MaterialService {
 
         return Base64.getEncoder().encodeToString(signedBytes);
     }
+    @Override
+    public MaterialResponseDto getMaterialById(UUID materialId) {
+        try {
+            UserResponseDto loggedUserDetails = userDetailService.getLoggedUserDetails(UserUtil.extractToken());
 
+            if (loggedUserDetails == null) {
+                throw new ValueNotExistException("User not found");
+            }else{
+                Material material = materialRepository.findById(materialId).orElseThrow(()
+                        -> new ValueNotExistException("Material not found with id " + materialId));
+                MaterialResponseDto dto = MaterialMapper.INSTANCE.toDto(material);
+                return dto;
+            }
+        }catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<MaterialResponseDto> getAllMaterialBySessionId(UUID sessionId) {
+        try {
+            UserResponseDto loggedUserDetails = userDetailService.getLoggedUserDetails(UserUtil.extractToken());
+
+            if (loggedUserDetails == null) {
+                throw new ValueNotExistException("User not found");
+            }else{
+                List<Material> allBySessionContentId = materialRepository.findAllBySession_ContentId(sessionId);
+                List<MaterialResponseDto> dtos = MaterialMapper.INSTANCE.toDtoList(allBySessionContentId);
+                return dtos;
+            }
+        }catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private String urlEncode(String value) {
 
