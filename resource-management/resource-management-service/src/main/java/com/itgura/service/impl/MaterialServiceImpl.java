@@ -11,7 +11,9 @@ import com.itgura.repository.MaterialTypeRepository;
 import com.itgura.repository.SessionRepository;
 import com.itgura.request.MaterialRequest;
 import com.itgura.request.SignedUrlRequest;
+import com.itgura.request.VideoUploadRequest;
 import com.itgura.request.dto.UserResponseDto;
+import com.itgura.response.dto.PreSignedUrlToUploadVideoResponseDto;
 import com.itgura.service.MaterialService;
 import com.itgura.service.UserDetailService;
 import com.itgura.util.UserUtil;
@@ -22,12 +24,15 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.cloudfront.CloudFrontUtilities;
 import software.amazon.awssdk.services.cloudfront.internal.utils.SigningUtils;
-import software.amazon.awssdk.services.cloudfront.model.CannedSignerRequest;
 import software.amazon.awssdk.services.cloudfront.model.CustomSignerRequest;
 import software.amazon.awssdk.services.cloudfront.url.SignedUrl;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
 import javax.security.auth.login.CredentialNotFoundException;
 import java.nio.file.Files;
@@ -37,16 +42,16 @@ import java.security.PrivateKey;
 import java.security.Security;
 import java.security.Signature;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.time.Duration;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 
-
-
+import static com.google.common.io.Files.getFileExtension;
 
 
 @Service
 public class MaterialServiceImpl implements MaterialService {
+    private final S3Presigner s3Presigner;
     @Autowired
     private UserDetailService userDetailService;
     @Autowired
@@ -55,17 +60,18 @@ public class MaterialServiceImpl implements MaterialService {
     private MaterialTypeRepository materialTypeRepository;
     @Autowired
     private MaterialRepository materialRepository;
-
     @Value("${cloudfront.domain}")
     private String cloudFrontDomain;
-
     @Value("${cloudfront.keyPairId}")
     private String keyPairId;
-
     @Value("${cloudfront.privateKeyPath}")
     private String privateKeyPath;
+    @Value("${aws.s3.bucketName}")
+    private String bucketName;
 
-
+    public MaterialServiceImpl(S3Presigner s3Presigner) {
+        this.s3Presigner = s3Presigner;
+    }
 
     @Override
     @Transactional
@@ -95,10 +101,9 @@ public class MaterialServiceImpl implements MaterialService {
             } else {
                 throw new ForbiddenException("You are not allowed to add material");
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
 
 
     }
@@ -113,25 +118,25 @@ public class MaterialServiceImpl implements MaterialService {
             }
             if (loggedUserDetails.getUserRoles().equals("ADMIN") || loggedUserDetails.getUserRoles().equals("TEACHER")) {
 
-                    Material material = materialRepository.findById(materialId)
-                            .orElseThrow(() -> new ValueNotExistException("Material not found with id " + materialId));
-                    material.setMaterialName(request.getMaterialName());
-                    material.setDescription(request.getDescription());
-                    material.setIsAvailableForStudents(request.getIsAvailableForStudent());
-                    material.setReference(request.getReference());
-                    MaterialType materialType = materialTypeRepository.findById(request.getMaterialType())
-                            .orElseThrow(() -> new ValueNotExistException("Material Type not found with id " + request.getMaterialType()));
-                    material.setMaterialType(materialType);
-                    material.setLastModifiedBy(loggedUserDetails.getUserId());
-                    material.setLastModifiedOn(new Date(System.currentTimeMillis()));
-                    materialRepository.save(material);
-                    return "Material updated successfully";
+                Material material = materialRepository.findById(materialId)
+                        .orElseThrow(() -> new ValueNotExistException("Material not found with id " + materialId));
+                material.setMaterialName(request.getMaterialName());
+                material.setDescription(request.getDescription());
+                material.setIsAvailableForStudents(request.getIsAvailableForStudent());
+                material.setReference(request.getReference());
+                MaterialType materialType = materialTypeRepository.findById(request.getMaterialType())
+                        .orElseThrow(() -> new ValueNotExistException("Material Type not found with id " + request.getMaterialType()));
+                material.setMaterialType(materialType);
+                material.setLastModifiedBy(loggedUserDetails.getUserId());
+                material.setLastModifiedOn(new Date(System.currentTimeMillis()));
+                materialRepository.save(material);
+                return "Material updated successfully";
 
 
             } else {
                 throw new ForbiddenException("You are not allowed to update material");
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -152,11 +157,12 @@ public class MaterialServiceImpl implements MaterialService {
             } else {
                 throw new ForbiddenException("You are not allowed to delete material");
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
     }
+
     // Generate signed url for video material
     @Override
     public String getVideoMaterialSignedUrl(SignedUrlRequest signedUrlRequest) throws Exception {
@@ -176,7 +182,6 @@ public class MaterialServiceImpl implements MaterialService {
 
         SignedUrl signedUrl = cloudFrontUtilities.getSignedUrlWithCustomPolicy(customSignerRequest);
         return signedUrl.url();
-
 
 
 //        long expirationTime = Instant.now().getEpochSecond() + (signedUrlRequest.getExpiresInHours() * 3600L);
@@ -209,6 +214,66 @@ public class MaterialServiceImpl implements MaterialService {
 //                keyPairId);
 
     }
+
+    @Override
+    public PreSignedUrlToUploadVideoResponseDto getPreSignedUrlToUploadVideo(VideoUploadRequest videoUploadRequest) throws ValueNotExistException, RuntimeException {
+
+
+
+        try {
+
+            Material material = new Material();
+
+            material.setMaterialName(videoUploadRequest.getOriginalFileName());
+
+            String fileExtension = getFileExtension(videoUploadRequest.getOriginalFileName());
+
+            material.setStatus("PENDING");
+            material.setSignedUrlExpireTime(videoUploadRequest.getSignedUrlExpireTime());
+            material.setSession(sessionRepository.findById(videoUploadRequest.getSessionId())
+                    .orElseThrow(() -> new ValueNotExistException("Session not found with id " + videoUploadRequest.getSessionId())));
+            material.setMaterialType(materialTypeRepository.findByName("VIDEO"));
+            material.setIsAvailableForStudents(videoUploadRequest.getIsAvailableForStudents());
+            material.setCreatedOn(new Date(System.currentTimeMillis()));
+            material.setCreatedBy(userDetailService.getLoggedUserDetails(UserUtil.extractToken()).getUserId());
+
+            Material materialInstance = materialRepository.save(material);
+            UUID uuid = materialInstance.getContentId();
+            String s3Key = "videos/" + uuid.toString()+"."+fileExtension;
+            materialInstance.setReference(s3Key);
+            materialRepository.save(materialInstance);
+
+            // Generate pre-signed URL
+            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(s3Key)
+                    .build();
+
+            PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()
+                    .putObjectRequest(putObjectRequest)
+                    .signatureDuration(Duration.ofMinutes(60))
+                    .build();
+
+            return new PreSignedUrlToUploadVideoResponseDto(uuid, s3Presigner.presignPutObject(presignRequest).url().toString());
+
+        } catch (ValueNotExistException e) {
+            throw new ValueNotExistException("Session not found with id " + videoUploadRequest.getSessionId());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+
+    }
+
+    @Override
+    public String markedVideoAsUploaded(UUID uuid) throws ValueNotExistException {
+        Material material = materialRepository.findById(uuid)
+                .orElseThrow(() -> new ValueNotExistException("Material not found with id " + uuid));
+        material.setStatus("UPLOADED");
+        materialRepository.save(material);
+        return "Video marked as uploaded";
+    }
+
 
     private String signPolicyWithPrivateKey(String base64EncodedPolicy) throws Exception {
         // Add the Bouncy Castle provider
@@ -278,7 +343,6 @@ public class MaterialServiceImpl implements MaterialService {
 //    }
 
 
-
     public String generateCustomSignedUrl(String resourcePath, Instant activeDate, Instant expirationDate, String ipAddress) throws Exception {
         // Load private key
         PrivateKey privateKey = loadPrivateKey();
@@ -312,5 +376,20 @@ public class MaterialServiceImpl implements MaterialService {
 
     private String urlSafeEncode(String value) {
         return value.replace("+", "-").replace("=", "_").replace("/", "~");
+    }
+
+    @Scheduled(fixedRate = 86400000) // Run daily
+    public void cleanupOrphanedMaterials() {
+        Instant cutoffTime = Instant.now().minusSeconds(86400);// 24 hours
+        List<Material> materials = materialRepository.findAllByStatusAndCreatedAtBefore("PENDING", cutoffTime);
+        for (Material material : materials) {
+
+            try {
+                materialRepository.delete(material);
+                System.out.println("Deleted orphaned materials: " + material.getMaterialName());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

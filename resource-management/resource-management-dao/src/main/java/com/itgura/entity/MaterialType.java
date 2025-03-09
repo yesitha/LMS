@@ -21,7 +21,7 @@ public class MaterialType {
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "material_type_id")
     private UUID materialTypeId;
-    @Column(name = "material_type")
+    @Column(name = "material_type") // e.g. VIDEO, PDF, DOCX, PPT
     private String materialType;
     @OneToMany(mappedBy = "materialType",cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Material> materialList;
