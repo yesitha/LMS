@@ -12,6 +12,9 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.UUID;
 
 
 @RestController
@@ -43,6 +46,15 @@ public class UserController {
     public AppResponse<UserDetailsResponse> updateUser(@RequestBody @Valid UserDetailRequest userDetailRequest) {
         try {
             UserDetailsResponse response = userService.updateUser(userDetailRequest);
+            return AppResponse.ok(response);
+        } catch (Exception e) {
+            return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");
+        }
+    }
+    @PatchMapping (value=ResourceManagementURI.USER_DETAILS + URIPrefix.UPDATE_PROFILE_PICTURE, consumes = "multipart/form-data")
+    public AppResponse<String> updateProfilePicture( @RequestParam(value = "userImage") MultipartFile file) {
+        try {
+            String response = userService.updateProfilePicture(file);
             return AppResponse.ok(response);
         } catch (Exception e) {
             return AppResponse.error(null, e.getMessage(), "Server Error", "500", "");

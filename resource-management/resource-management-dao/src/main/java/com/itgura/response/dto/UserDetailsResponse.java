@@ -63,4 +63,9 @@ public class UserDetailsResponse {
     private String city;
     @JsonProperty("user_roles")
     private String userRoles;
+
+    @JsonProperty("profile_picture")
+    private String profilePicture;
+    @JsonProperty("profile_picture_name")
+    private String profilePictureName;
 }

@@ -39,6 +39,11 @@ public class Student {
     private String gender;
     @Column(name = "school")
     private String school;
+    @Lob
+    @Column(name = "profile_picture")
+    private Byte[]profilePicture;
+    @Column(name = "profile_picture_name")
+    private String profilePictureName;
     @ManyToOne
     @JoinColumn(name = "stream_id")
     private Stream stream;
