@@ -4,6 +4,7 @@ import com.itgura.dao.UserDao;
 import com.itgura.entity.Address;
 import com.itgura.entity.Stream;
 import com.itgura.entity.Student;
+import com.itgura.exception.ApplicationException;
 import com.itgura.exception.BadRequestRuntimeException;
 import com.itgura.exception.ValueNotFoundException;
 import com.itgura.repository.AddressRepository;
@@ -16,11 +17,18 @@ import com.itgura.response.dto.mapper.SessionMapper;
 import com.itgura.response.dto.mapper.UserDetailMapper;
 import com.itgura.service.UserDetailService;
 import com.itgura.util.UserUtil;
+import jakarta.transaction.Transactional;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.security.auth.login.CredentialNotFoundException;
+import java.io.IOException;
+import java.util.Base64;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -45,18 +53,26 @@ public class UserDetailsServiceImpl implements UserDetailService {
     }
 
     @Override
+    @Transactional
     public UserDetailsResponse findUser() {
         try{
             UserResponseDto loggedUserDetails = getLoggedUserDetails(UserUtil.extractToken());
-            System.out.println("Extract details from token :"+loggedUserDetails);
+
             UUID userId = loggedUserDetails.getUserId();
-            System.out.println("Extract details from token :"+loggedUserDetails);
+
             Student student = studentRepository.findByUserId(userId)
                     .orElseThrow(() -> {
 
                 return new ValueNotFoundException("user not found id: " + userId);
             });
+
             UserDetailsResponse dto = UserDetailMapper.INSTANCE.toDto(student);
+//            if(student.getProfilePicture()!=null) {
+//                dto.setProfilePicture(Base64.getEncoder().encodeToString(ArrayUtils.toPrimitive(student.getProfilePicture())));
+//            }else {
+//                dto.setProfilePicture(null);
+//            }
+
             dto.setUserRoles(loggedUserDetails.getUserRoles());
             return dto;
 
@@ -226,4 +242,46 @@ public class UserDetailsServiceImpl implements UserDetailService {
         }
     }
 
-}
+    @Override
+    @Transactional
+    public String updateProfilePicture(MultipartFile file) throws BadRequestRuntimeException, ValueNotFoundException {
+        try {
+            if (file == null) {
+                throw new BadRequestRuntimeException("Profile picture is required");
+            }
+
+            String ext = Objects.requireNonNull(file.getOriginalFilename()).substring(file.getOriginalFilename().lastIndexOf('.') + 1).toLowerCase();
+            if (!ext.equals("jpg") && !ext.equals("jpeg") && !ext.equals("png")) {
+                throw new BadRequestRuntimeException("Profile picture must be in JPG, JPEG, or PNG format");
+            }
+
+            UserResponseDto loggedUserDetails = getLoggedUserDetails(UserUtil.extractToken());
+            UUID userId = loggedUserDetails.getUserId();
+
+            // Find the existing Student record associated with the logged-in user
+
+            if (!studentRepository.existsById(userId)) {
+                 new ValueNotFoundException("User not found with ID: " + userId);
+            }
+                // Convert the MultipartFile to a byte array
+
+            studentRepository.updateProfilePicture(userId,ArrayUtils.toObject(file.getBytes()));
+            studentRepository.updateProfilePictureName(userId,file.getOriginalFilename());
+
+                return "Profile picture updated successfully";
+
+            } catch(ValueNotFoundException e){
+                throw e;
+            }catch(IllegalArgumentException e){
+                throw new BadRequestRuntimeException(e.getMessage());
+
+            } catch(BadRequestRuntimeException e){
+                throw e;
+            } catch(Exception e){
+                throw new RuntimeException("Failed to update profile picture", e);
+
+            }
+        }
+
+
+    }
